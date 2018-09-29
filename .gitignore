@@ -1,0 +1,6 @@
+cscope.*
+tags
+*rsa*
+*.txt
+*.out
+*.swp
