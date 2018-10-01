@@ -24,6 +24,9 @@
  * 2. 删
  * 3. 改
  * 4. 查
+ *  * 根据“ISBN”、“图书名”、“作者”、“出版社”、“图书种类”查询，并且分页
+ *  * 其中，所有条件都可选择模糊匹配，或者完全匹配
+ *  * 搜寻结果可根据以上所列的查询条件进行排序，顺序或倒序，也可以按：价格、总库存量、现库存量、预约量、是否可借、最近一次借出时间、最近一次归还时间，进行排序
  *     
  * ### 图书借还管理
  * 占位符
@@ -90,6 +93,8 @@ void save_all_books(book *&);
 void modify_and_save_book_info(std::string);
 template <class T>
 void convertFromString(T &value, const std::string &s);
+unsigned short display_search_book();
+void show_all_books(book *);
 
 
 int main() {
@@ -118,6 +123,32 @@ int main() {
                         break;
                     case 3:
                         // 查询图书
+                        switch (display_search_book()) {
+                            case 200:
+                                // 所有图书
+                                show_all_books(generate_book_link_table());
+                                break;
+                            case 201:
+                                // 按 ISBN
+                                break;
+                            case 202:
+                                // 按图书名
+                                break;
+                            case 203:
+                                // 按作者
+                                break;
+                            case 204:
+                                // 按出版社
+                                break;
+                            case 205:
+                                // 按图书种类
+                                break;
+                            case 0:
+                                return 0;
+                            case 1:
+                                switchy_home = true;
+                                break;
+                        }
                         break;
                     case 6:
                         // 当前借出列表
@@ -685,6 +716,54 @@ void save_all_books(book * &pHead) {
  
 void print_book(book * pBook) {
     std::cout << pBook->book_id << std::endl;
+}
+
+unsigned short display_search_book() {
+
+    display_header();
+    std::cout << "+                                        查询图书                                          +" << std::endl;
+    std::cout << "+                                    +++++++++++++++                                       +" << std::endl;
+    std::cout << "+                                                                                          +" << std::endl;
+
+    std::cout << "+ 可选择以下的查询条件进行查询：200:所有图书 201:ISBN 202:图书名" << std:: endl;
+    std::cout << "+                               203:作者 204:出版社 205:图书种类" << std:: endl;
+    std::cout << "+ 请选择查询条件 ID（输入 0 退出系统，输入 1 返回管理首页）：";
+    std::cin >> select_num;
+
+    return select_num;
+
+}
+
+void show_all_books(book * pBook) {
+    std::cout << "Id" << "     " << "ISBN" << "     " << "图书名" << "     " << "作者" << "     " << "出版社" << "     " << "图书种类" << "     " << "图书价格" << "     " << "借阅量" << "     " << "总库存量" << "     " << "现库存量" << "     " << "预约量" << "     " << "是否可借" << "     " << "最近一次借出时间" << "     " << "最近一次归还时间" << std::endl; 
+
+    while (pBook != NULL) {
+        std::cout << pBook->book_id << "  " << pBook->isbn << "  " << pBook->book_name  << "  " << pBook->author << "  " << pBook->book_publisher << "  " <<  pBook->book_category << "  " << pBook->price << "  " << pBook->borrow_count << "  " << pBook->book_amount << "  " << pBook->book_current_amount << "  " << pBook->appointment << "  " << pBook->book_status << "  " << pBook->last_borrow_date << "  " << pBook->last_return_date << std::endl;
+        std::cout << std::endl;
+        std::cout << "        --------------------------------------        " << std::endl;
+        std::cout << std::endl;
+        /*
+        std::cout << "Id:" << pBook->book_id << std::endl;
+        std::cout << "ISBN:" << pBook->isbn << std::endl; 
+        std::cout << "图书名:" << pBook->book_name << std::endl;
+        std::cout << "作者:" << pBook->author << std::endl;
+        std::cout << "出版社:" << pBook->book_publisher << std::endl;
+        std::cout << "图书种类:" <<  pBook->book_category << std::endl;
+        std::cout << "图书价格:" << pBook->price << std::endl;
+        std::cout << "借阅量:" << pBook->borrow_count << std:: endl;
+        std::cout << "总库存量:" << pBook->book_amount << std::endl;
+        std::cout << "现库存量:" << pBook->book_current_amount << std::endl;
+        std::cout << "预约量:" << pBook->appointment << std::endl;
+        std::cout << "是不可借:" << pBook->book_status << std::endl;
+        std::cout << "最近一次借出时间:" << pBook->last_borrow_date << std::endl;
+        std::cout << "最近一次归还时间:" << pBook->last_return_date << std::endl;
+        std::cout << std::endl;
+        std::cout << "        --------------------------------------        " << std::endl;
+        std::cout << std::endl;
+        */
+
+        pBook = pBook->next;
+    }    
 }
 
 /**
