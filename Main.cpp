@@ -38,6 +38,7 @@
 #include <fstream>
 #include <cstring>
 #include <sstream>
+#include <iomanip>
 
 unsigned short select_num = 0;
 char select_char = 'C';
@@ -735,13 +736,90 @@ unsigned short display_search_book() {
 }
 
 void show_all_books(book * pBook) {
-    std::cout << "Id" << "     " << "ISBN" << "     " << "图书名" << "     " << "作者" << "     " << "出版社" << "     " << "图书种类" << "     " << "图书价格" << "     " << "借阅量" << "     " << "总库存量" << "     " << "现库存量" << "     " << "预约量" << "     " << "是否可借" << "     " << "最近一次借出时间" << "     " << "最近一次归还时间" << std::endl; 
+    //std::cout << "Id" << "     " << "ISBN" << "     " << "图书名" << "     " << "作者" << "     " << "出版社" << "     " << "图书种类" << "     " << "图书价格" << "     " << "借阅量" << "     " << "总库存量" << "     " << "现库存量" << "     " << "预约量" << "     " << "是否可借" << "     " << "最近一次借出时间" << "     " << "最近一次归还时间" << std::endl; 
+
+    unsigned short row, column;
+    row = 0;
+    //column = 0;
+    //
+    
+    //TextTable t( '-', '|', '+' );
 
     while (pBook != NULL) {
-        std::cout << pBook->book_id << "  " << pBook->isbn << "  " << pBook->book_name  << "  " << pBook->author << "  " << pBook->book_publisher << "  " <<  pBook->book_category << "  " << pBook->price << "  " << pBook->borrow_count << "  " << pBook->book_amount << "  " << pBook->book_current_amount << "  " << pBook->appointment << "  " << pBook->book_status << "  " << pBook->last_borrow_date << "  " << pBook->last_return_date << std::endl;
+        std::cout << std::setw(10) <<  std::setiosflags(std::ios::right)<< pBook->book_id;
+        std::cout << std::setw(20) <<  std::setiosflags(std::ios::right)<< pBook->isbn;
+        std::cout <<std::setw(90) << std::setiosflags(std::ios::left)<< pBook->book_name;
+        std::cout << std::setw(20) <<  std::setiosflags(std::ios::right)<<pBook->author;
+        std::cout << std::setw(50) <<  std::setiosflags(std::ios::right)<<pBook->book_publisher;
+        std::cout << std::setw(20) <<  std::setiosflags(std::ios::right)<< pBook->book_category;
+        std::cout << std::setw(5) <<  std::setiosflags(std::ios::right)<<pBook->price;
+        std::cout << std::setw(5) <<  std::setiosflags(std::ios::right)<<pBook->borrow_count;
+        std::cout << std::setw(5) <<  std::setiosflags(std::ios::right)<<pBook->book_amount;
+        std::cout << std::setw(5) <<  std::setiosflags(std::ios::right)<<pBook->book_current_amount;
+        std::cout << std::setw(5) <<  std::setiosflags(std::ios::right)<<pBook->appointment;
+        std::cout << std::setw(5) <<  std::setiosflags(std::ios::right)<<pBook->book_status;
+        std::cout << std::setw(20) <<  std::setiosflags(std::ios::right)<<pBook->last_borrow_date;
+        std::cout << std::setw(20) <<  std::setiosflags(std::ios::right)<<pBook->last_return_date;
         std::cout << std::endl;
         std::cout << "        --------------------------------------        " << std::endl;
         std::cout << std::endl;
+        std::cout << std::endl;
+        
+        //for (int column = 0; column < 15; column ++) {
+            //std::cout << "Id" << "     " << "ISBN" << "     " << "图书名" << "     " << "作者" << "     " << "出版社" << "     " << "图书种类" << "     " << "图书价格" << "     " << "借阅量" << "     " << "总库存量" << "     " << "现库存量" << "     " << "预约量" << "     " << "是否可借" << "     " << "最近一次借出时间" << "     " << "最近一次归还时间" << std::endl; 
+            /*
+            if (row == 0) {
+                switch (column) {
+                    case 0:
+                        table[row][column] = "Id";
+                        break;
+                    case 1:
+                        table[row][column] = "ISBN";
+                        break;
+                    case 2:
+                        table[row][column] = "图书名";
+                        break;
+                    case 3:
+                        table[row][column] = "作者";
+                        break;
+                    case 4:
+                        table[row][column] = "出版社";
+                        break;
+                    case 5:
+                        table[row][column] = "图书种类";
+                        break;
+                    case 6:
+                        table[row][column] = "图书价格";
+                        break;
+                    case 7:
+                        table[row][column] = "借阅量";
+                        break;
+                    case 8:
+                        table[row][column] = "总库存量";
+                        break;
+                    case 9:
+                        table[row][column] = "现库存量";
+                        break;
+                    case 10:
+                        table[row][column] = "预约量";
+                        break;
+                    case 11:
+                        table[row][column] = "是否可借";
+                        break;
+                    case 12:
+                        table[row][column] = "最近一次借出时间";
+                        break;
+                    case 13:
+                        table[row][column] = "最近一次归还时间";
+                        break;
+                }
+            } 
+            */
+        //}
+
+    
+
+
         /*
         std::cout << "Id:" << pBook->book_id << std::endl;
         std::cout << "ISBN:" << pBook->isbn << std::endl; 
@@ -764,6 +842,8 @@ void show_all_books(book * pBook) {
 
         pBook = pBook->next;
     }    
+
+    //std::cout << t;
 }
 
 /**
