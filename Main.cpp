@@ -799,7 +799,7 @@ int search_books(book * pBook, check_condition condition = ALL, std::string keyw
 
     bool found = false;
     while (pBook != NULL) {
-        std::stringstream ss_keyword("");
+        //std::stringstream ss_keyword("");
 
         switch (condition) {
             case ALL:
@@ -808,10 +808,11 @@ int search_books(book * pBook, check_condition condition = ALL, std::string keyw
             case ISBN:
                 // 按 ISBN 查询
                 int ret;
-                ss_keyword << '*' << keyword << "*";
+                //ss_keyword << '*' << keyword << "*";
                 //std::cout << ss_keyword.str() << std::endl;
                 //std::cout << pBook->isbn << std::endl;
-                if (!fnmatch(ss_keyword.str().c_str(), pBook->isbn.c_str(), FNM_NOESCAPE | FNM_CASEFOLD)) {
+                keyword = "*" + keyword + "*";
+                if (!fnmatch(keyword.c_str(), pBook->isbn.c_str(), FNM_NOESCAPE | FNM_CASEFOLD)) {
                     // fnmatch 返回值为 0 时表示匹配到
                     std::cout << "找到" << pBook->isbn << std::endl;
                     found = true;       
