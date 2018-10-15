@@ -116,7 +116,7 @@ int main() {
 
     // 管理首页开关
     bool switchy_admin_home = true;
-    // 图书条件内循环开关
+    // 图书按条件搜索内循环开关
     bool switchy_search_book = true;
     // 搜索图书入口开关
     bool switchy_search_book_home = true;
