@@ -90,7 +90,7 @@ enum check_condition {
 
 void display_header();
 int display_home();
-int dipslay_admin_home();
+int display_admin_home();
 int display_logon_reader();
 int add_book();
 char ensure_book_info(book *);
@@ -128,7 +128,7 @@ int main() {
             //std::cout << "管理员登录成功" << std::endl;
             while (switchy_admin_home) {
                 switchy_admin_home = false;
-                switch (dipslay_admin_home()) {
+                switch (display_admin_home()) {
                     case 2:
                         // 增加图书
                         switch (add_book()) {
@@ -297,7 +297,7 @@ int display_home() {
 
 }
 
-int dipslay_admin_home() {
+int display_admin_home() {
 
     display_header();
     std::cout << "+                                                                                          +" << std::endl;
@@ -311,8 +311,8 @@ int dipslay_admin_home() {
     std::cout << "+                     |- 图书列表        |- 借还列表          |- 用户列表                  +" << std::endl;
     std::cout << "+                     |- 按条件搜索      |- 按读者查询        |- 搜索用户                  +" << std::endl;
     std::cout << "+                     |- 修改图书信息  8. 图书预约            |- 按图书查                  +" << std::endl;
-    std::cout << "+                     |- 修改图书信息  9. 借出图书            |- 删除用户                  +" << std::endl;
-    std::cout << "+                     |- 删除图书                             |- 修改用户                  +" << std::endl;
+    std::cout << "+                     |- 删除图书      9. 借出图书            |- 删除用户                  +" << std::endl;
+    std::cout << "+                                                             |- 修改用户                  +" << std::endl;
     std::cout << "+                                                                                          +" << std::endl;
     std::cout << "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" << std::endl;
     std::cout << "+ 0:退出程序                                                                               +" << std::endl;
@@ -832,10 +832,6 @@ int search_books(book * pBook, check_condition condition = ALL, std::string keyw
         //std::stringstream ss_keyword("");
 
         switch (condition) {
-            case ALL:
-                // 所有图书列表
-                std::cout << pBook->isbn << std::endl;
-                break;
             case ISBN:
                 // 按 ISBN 查询
                 //ss_keyword << '*' << keyword << "*";
@@ -879,8 +875,11 @@ int search_books(book * pBook, check_condition condition = ALL, std::string keyw
                 }
                 // 按图书种类查询
                 break;
+            case ALL:
             default:
-                // ALL，显示所有图书
+                // 所有图书列表
+                found = true;
+                std::cout << pBook->isbn << std::endl;
                 break;
                 
         }
