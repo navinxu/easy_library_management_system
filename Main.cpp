@@ -107,14 +107,18 @@ void save_all_books(book *&);
 void modify_and_save_book_info(std::string);
 template <class T>
 void convertFromString(T &value, const std::string &s);
-int display_search_book();
+void display_search_book();
+int display_search_book_select();
 int search_books(book * pBook, check_condition condition, std::string keyword);
 void search_book_work(check_condition condition, bool &switchy_search_book_home, bool &search_book);
 
 int main() {
 
-    bool switchy_home = true;
+    // 管理首页开关
+    bool switchy_admin_home = true;
+    // 图书条件内循环开关
     bool switchy_search_book = true;
+    // 搜索图书入口开关
     bool switchy_search_book_home = true;
     std::string keyword = "";
 
@@ -122,29 +126,31 @@ int main() {
         case 100:
             // enter management system
             //std::cout << "管理员登录成功" << std::endl;
-            while (switchy_home) {
-                switchy_home = false;
+            while (switchy_admin_home) {
+                switchy_admin_home = false;
                 switch (dipslay_admin_home()) {
                     case 2:
                         // 增加图书
                         switch (add_book()) {
                             case -1:
-                                switchy_home = true;
+                                switchy_admin_home = true;
                                 break;
                             case 0:
                                 return 0;
                             default:
-                                switchy_home = true;
+                                switchy_admin_home = true;
                                 break;
                         }
                         break;
                     case 3:
                         // 查询图书
+                        display_search_book();
                         while (switchy_search_book_home) {
                             switchy_search_book_home = false;
-                            switch (display_search_book()) {
+                            switch (display_search_book_select()) {
                                 case 200:
                                     // 所有图书
+                                    std::getchar();
                                     search_book_work(ALL, switchy_search_book_home, switchy_search_book);
                                     switchy_search_book_home = true;
                                     break;
@@ -206,8 +212,10 @@ int main() {
                                 case 0:
                                     return 0;
                                 case 1:
-                                    switchy_home = true;
+                                    switchy_admin_home = true;
                                     break;
+                                default:
+                                    switchy_search_book_home = true;
                             }
 
                         }
@@ -232,6 +240,8 @@ int main() {
                         break;
                     case 0:
                         return 0;
+                    default:
+                        switchy_admin_home = true;
                 }
             }
             break;
@@ -780,19 +790,22 @@ void print_book(book * pBook) {
     std::cout << pBook->book_id << std::endl;
 }
 
-int display_search_book() {
+void display_search_book() {
 
     display_header();
     std::cout << "+                                        查询图书                                          +" << std::endl;
     std::cout << "+                                    +++++++++++++++                                       +" << std::endl;
     std::cout << "+                                                                                          +" << std::endl;
+}
 
-    std::cout << "+ 可选择以下的查询条件进行查询：200:所有图书 201:ISBN 202:图书名" << std:: endl;
-    std::cout << "+                               203:作者 204:出版社 205:图书种类" << std:: endl;
+int display_search_book_select() {
+    std::cout << "+ 可选择以下的查询条件进行查询：200:所有图书 201:ISBN   202:图书名" << std:: endl;
+    std::cout << "+                               203:作者     204:出版社 205:图书种类" << std:: endl;
     std::cout << "+ 请选择查询条件 ID（输入 0 退出系统，输入 1 返回管理首页）：";
     std::cin >> select_num;
 
     return select_num;
+
 
 }
 
