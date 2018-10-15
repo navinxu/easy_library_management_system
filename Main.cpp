@@ -109,12 +109,13 @@ template <class T>
 void convertFromString(T &value, const std::string &s);
 int display_search_book();
 int search_books(book * pBook, check_condition condition, std::string keyword);
+void search_book_work(check_condition condition, bool &switchy_search_book_home, bool &search_book);
 
 int main() {
 
     bool switchy_home = true;
-    bool search_book = true;
-    bool search_book_home = true;
+    bool switchy_search_book = true;
+    bool switchy_search_book_home = true;
     std::string keyword = "";
 
     switch (display_home()) {
@@ -139,55 +140,68 @@ int main() {
                         break;
                     case 3:
                         // 查询图书
-                        while (search_book_home) {
-                            search_book_home = false;
+                        while (switchy_search_book_home) {
+                            switchy_search_book_home = false;
                             switch (display_search_book()) {
                                 case 200:
                                     // 所有图书
-                                    search_books(generate_book_link_table(), ALL, "");
+                                    search_book_work(ALL, switchy_search_book_home, switchy_search_book);
+                                    switchy_search_book_home = true;
                                     break;
                                 case 201:
                                     // 按 ISBN
                                     std::getchar();
-                                    search_book = true;
-                                    while (search_book) {
-                                        search_book = false;
+                                    switchy_search_book = true;
+                                    while (switchy_search_book) {
+                                        switchy_search_book = false;
                                         std::cout << "请输入要查询的ISBN(输入-1重新选择):";
                                         //std::cin >> keyword;
-                                        std::getline(std::cin, keyword);
-
-                                        if (!keyword.compare("-1")) {
-                                            search_book_home = true;
-                                            break;;
-                                        } 
-                                            
-
-                                        switch (search_books(generate_book_link_table(), ISBN, keyword)) {
-                                            case 0:
-                                                // 关键词为空
-                                                search_book = true;
-                                                break;
-                                            case 1:
-                                                // 没有找到关键词
-                                                search_book = true;
-                                                break;
-                                            case 2:
-                                                // 找到
-                                                break;
-                                        }
+                                        search_book_work(ISBN, switchy_search_book_home, switchy_search_book);
                                     }
                                     break;
                                 case 202:
                                     // 按图书名
+                                    std::getchar();
+                                    switchy_search_book = true;
+                                    while (switchy_search_book) {
+                                        switchy_search_book = false;
+                                        std::cout << "请输入要查询的图书名(输入-1重新选择):";
+                                        //std::cin >> keyword;
+                                        search_book_work(NAME, switchy_search_book_home, switchy_search_book);
+                                    }
                                     break;
                                 case 203:
                                     // 按作者
+                                    std::getchar();
+                                    switchy_search_book = true;
+                                    while (switchy_search_book) {
+                                        switchy_search_book = false;
+                                        std::cout << "请输入要查询的作者名(多个作者用 / 分割，输入-1重新选择):";
+                                        //std::cin >> keyword;
+                                        search_book_work(AUTHOR, switchy_search_book_home, switchy_search_book);
+                                    }
                                     break;
                                 case 204:
                                     // 按出版社
+                                    std::getchar();
+                                    switchy_search_book = true;
+                                    while (switchy_search_book) {
+                                        switchy_search_book = false;
+                                        std::cout << "请输入要查询的出版社(输入-1重新选择):";
+                                        //std::cin >> keyword;
+                                        search_book_work(PUBLISHER, switchy_search_book_home, switchy_search_book);
+                                    }
                                     break;
                                 case 205:
                                     // 按图书种类
+                                    std::getchar();
+                                    switchy_search_book = true;
+                                    while (switchy_search_book) {
+                                        switchy_search_book = false;
+                                        std::cout << "请输入要查询的图书类别(输入-1重新选择):";
+                                        //std::cin >> keyword;
+                                        search_book_work(CATEGORY, switchy_search_book_home, switchy_search_book);
+                                    }
                                     break;
                                 case 0:
                                     return 0;
@@ -798,20 +812,22 @@ int search_books(book * pBook, check_condition condition = ALL, std::string keyw
     }
 
     bool found = false;
+
+    // 组装模式
+    keyword = "*" + keyword + "*";
     while (pBook != NULL) {
         //std::stringstream ss_keyword("");
 
         switch (condition) {
             case ALL:
                 // 所有图书列表
+                std::cout << pBook->isbn << std::endl;
                 break;
             case ISBN:
                 // 按 ISBN 查询
-                int ret;
                 //ss_keyword << '*' << keyword << "*";
                 //std::cout << ss_keyword.str() << std::endl;
                 //std::cout << pBook->isbn << std::endl;
-                keyword = "*" + keyword + "*";
                 if (!fnmatch(keyword.c_str(), pBook->isbn.c_str(), FNM_NOESCAPE | FNM_CASEFOLD)) {
                     // fnmatch 返回值为 0 时表示匹配到
                     std::cout << "找到" << pBook->isbn << std::endl;
@@ -819,15 +835,35 @@ int search_books(book * pBook, check_condition condition = ALL, std::string keyw
                 }
                 break;
             case NAME:
+                if (!fnmatch(keyword.c_str(), pBook->book_name.c_str(), FNM_NOESCAPE | FNM_CASEFOLD)) {
+                    // fnmatch 返回值为 0 时表示匹配到
+                    std::cout << "找到" << pBook->isbn << std::endl;
+                    found = true;       
+                }
                 // 按图书名查询
                 break;
             case AUTHOR:
+                if (!fnmatch(keyword.c_str(), pBook->author.c_str(), FNM_NOESCAPE | FNM_CASEFOLD)) {
+                    // fnmatch 返回值为 0 时表示匹配到
+                    std::cout << "找到" << pBook->isbn << std::endl;
+                    found = true;       
+                }
                 // 按作者查询
                 break;
             case PUBLISHER:
+                if (!fnmatch(keyword.c_str(), pBook->book_publisher.c_str(), FNM_NOESCAPE | FNM_CASEFOLD)) {
+                    // fnmatch 返回值为 0 时表示匹配到
+                    std::cout << "找到" << pBook->isbn << std::endl;
+                    found = true;       
+                }
                 // 按出版社查询
                 break;
             case CATEGORY:
+                if (!fnmatch(keyword.c_str(), pBook->book_category.c_str(), FNM_NOESCAPE | FNM_CASEFOLD)) {
+                    // fnmatch 返回值为 0 时表示匹配到
+                    std::cout << "找到" << pBook->isbn << std::endl;
+                    found = true;       
+                }
                 // 按图书种类查询
                 break;
             default:
@@ -952,6 +988,41 @@ int search_books(book * pBook, check_condition condition = ALL, std::string keyw
     */
 
     //std::cout << t;
+}
+
+/*
+ *
+ * 读取关键词并执行搜索
+ * \param check_condition
+ * \param bool 
+ * \param bool
+ */
+void search_book_work(check_condition condition, bool &switchy_search_book_home, bool &search_book) {
+    std::string keyword = "";
+
+    if (condition != ALL)
+        std::getline(std::cin, keyword);
+
+    if (!keyword.compare("-1")) {
+        switchy_search_book_home = true;
+        return;
+    } 
+        
+
+    switch (search_books(generate_book_link_table(), condition, keyword)) {
+        case 0:
+            // 关键词为空
+            search_book = true;
+            break;
+        case 1:
+            // 没有找到关键词
+            search_book = true;
+            break;
+        case 2:
+            // 找到
+            break;
+    }
+
 }
 
 /**
