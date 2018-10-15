@@ -810,7 +810,7 @@ int display_search_book_select() {
 }
 
 /**
- * 显示所有图书
+ * 按条件搜索图书 
  * \param pBook 图书结构的指针
  * \param condition 查询条件，有 ISBN、图书名、作者、出版社、图书种类 几种条件，支持模糊搜索
  * \param keyword 查询关键词
@@ -828,8 +828,12 @@ int search_books(book * pBook, check_condition condition = ALL, std::string keyw
 
     // 组装模式
     keyword = "*" + keyword + "*";
+    // 统计条目的总数量
+    int count = 0; 
     while (pBook != NULL) {
         //std::stringstream ss_keyword("");
+        //
+        count ++;
 
         switch (condition) {
             case ISBN:
@@ -839,14 +843,14 @@ int search_books(book * pBook, check_condition condition = ALL, std::string keyw
                 //std::cout << pBook->isbn << std::endl;
                 if (!fnmatch(keyword.c_str(), pBook->isbn.c_str(), FNM_NOESCAPE | FNM_CASEFOLD)) {
                     // fnmatch 返回值为 0 时表示匹配到
-                    std::cout << "找到" << pBook->isbn << std::endl;
+                    std::cout << "找到" << pBook->book_id << "    " << pBook->isbn << "   " << pBook->book_name <<  std::endl;
                     found = true;       
                 }
                 break;
             case NAME:
                 if (!fnmatch(keyword.c_str(), pBook->book_name.c_str(), FNM_NOESCAPE | FNM_CASEFOLD)) {
                     // fnmatch 返回值为 0 时表示匹配到
-                    std::cout << "找到" << pBook->isbn << std::endl;
+                    std::cout << "找到" << pBook->isbn << "   " << pBook->book_name <<  std::endl;
                     found = true;       
                 }
                 // 按图书名查询
@@ -854,7 +858,7 @@ int search_books(book * pBook, check_condition condition = ALL, std::string keyw
             case AUTHOR:
                 if (!fnmatch(keyword.c_str(), pBook->author.c_str(), FNM_NOESCAPE | FNM_CASEFOLD)) {
                     // fnmatch 返回值为 0 时表示匹配到
-                    std::cout << "找到" << pBook->isbn << std::endl;
+                    std::cout << "找到" << pBook->isbn << "   " << pBook->book_name <<  std::endl;
                     found = true;       
                 }
                 // 按作者查询
@@ -862,7 +866,7 @@ int search_books(book * pBook, check_condition condition = ALL, std::string keyw
             case PUBLISHER:
                 if (!fnmatch(keyword.c_str(), pBook->book_publisher.c_str(), FNM_NOESCAPE | FNM_CASEFOLD)) {
                     // fnmatch 返回值为 0 时表示匹配到
-                    std::cout << "找到" << pBook->isbn << std::endl;
+                    std::cout << "找到" << pBook->isbn << "   " << pBook->book_name <<  std::endl;
                     found = true;       
                 }
                 // 按出版社查询
@@ -870,7 +874,7 @@ int search_books(book * pBook, check_condition condition = ALL, std::string keyw
             case CATEGORY:
                 if (!fnmatch(keyword.c_str(), pBook->book_category.c_str(), FNM_NOESCAPE | FNM_CASEFOLD)) {
                     // fnmatch 返回值为 0 时表示匹配到
-                    std::cout << "找到" << pBook->isbn << std::endl;
+                    std::cout << "找到" << pBook->isbn << "   " << pBook->book_name <<  std::endl;
                     found = true;       
                 }
                 // 按图书种类查询
@@ -879,7 +883,7 @@ int search_books(book * pBook, check_condition condition = ALL, std::string keyw
             default:
                 // 所有图书列表
                 found = true;
-                std::cout << pBook->isbn << std::endl;
+                std::cout << pBook->isbn << "   " << pBook->book_name <<  std::endl;
                 break;
                 
         }
@@ -890,6 +894,9 @@ int search_books(book * pBook, check_condition condition = ALL, std::string keyw
     if (!found) {
         std::cout << "非常抱歉！没有找到哦！" << std::endl;
         return 1;
+    } else {
+        // 找到
+        return 2;
     }
 
 
@@ -1024,14 +1031,15 @@ void search_book_work(check_condition condition, bool &switchy_search_book_home,
     switch (search_books(generate_book_link_table(), condition, keyword)) {
         case 0:
             // 关键词为空
-            search_book = true;
-            break;
         case 1:
             // 没有找到关键词
             search_book = true;
             break;
         case 2:
             // 找到
+            std::cout << "============================================================================================" << std::endl;
+            std::cout << "+ 请输入需要操作的对象(图书编号):";
+            
             break;
     }
 
