@@ -109,8 +109,10 @@ template <class T>
 void convertFromString(T &value, const std::string &s);
 void display_search_book();
 int display_search_book_select();
-int search_books(book * pBook, check_condition condition, std::string keyword);
+int search_books(book * pBookHead, check_condition condition, std::string keyword);
 void search_book_work(check_condition condition, bool &switchy_search_book_home, bool &search_book);
+void delete_book_by_id(unsigned int book_id);
+void do_delete_book_by_id(book * pBookHead, unsigned int book_id);
 
 int main() {
 
@@ -496,15 +498,15 @@ int add_book() {
     }
 }
 
-char ensure_book_info(book * pBook) {
+char ensure_book_info(book * pBookHead) {
 
     std::cout << "请确定录入以下的信息：" << std::endl;
-    std::cout << "ISBN：" << pBook->isbn << std::endl;
-    std::cout << "图书名：" << pBook->book_name << std::endl;
-    std::cout << "作者：" << pBook->author << std::endl;
-    std::cout << "图书类别：" << pBook->book_category << std::endl;
-    std::cout << "出版社：" << pBook->book_publisher << std::endl;
-    std::cout << "价格：" << pBook->price << std::endl;
+    std::cout << "ISBN：" << pBookHead->isbn << std::endl;
+    std::cout << "图书名：" << pBookHead->book_name << std::endl;
+    std::cout << "作者：" << pBookHead->author << std::endl;
+    std::cout << "图书类别：" << pBookHead->book_category << std::endl;
+    std::cout << "出版社：" << pBookHead->book_publisher << std::endl;
+    std::cout << "价格：" << pBookHead->price << std::endl;
 
     std::cout << "确定保存(Y/N)：";
     char ensure = 'N';
@@ -518,11 +520,11 @@ char ensure_book_info(book * pBook) {
  * 保存图书信息
  */
 
-void save_book(book * pBook, bool single_book = true) {
+void save_book(book * pBookHead, bool single_book = true) {
 
     std::ofstream fout = get_file_write_handler("books.txt", 'A');
 
-    fout << pBook->book_id << "|||" << pBook->isbn << "|||" << pBook->book_name  << "|||" << pBook->author << "|||" << pBook->book_publisher << "|||" <<  pBook->book_category << "|||" << pBook->price << "|||" << pBook->borrow_count << "|||" << pBook->book_amount << "|||" << pBook->book_current_amount << "|||" << pBook->appointment << "|||" << pBook->book_status << "|||" << pBook->last_borrow_date << "|||" << pBook->last_return_date << std::endl;
+    fout << pBookHead->book_id << "|||" << pBookHead->isbn << "|||" << pBookHead->book_name  << "|||" << pBookHead->author << "|||" << pBookHead->book_publisher << "|||" <<  pBookHead->book_category << "|||" << pBookHead->price << "|||" << pBookHead->borrow_count << "|||" << pBookHead->book_amount << "|||" << pBookHead->book_current_amount << "|||" << pBookHead->appointment << "|||" << pBookHead->book_status << "|||" << pBookHead->last_borrow_date << "|||" << pBookHead->last_return_date << std::endl;
 
     fout.close();
 
@@ -536,12 +538,12 @@ void save_book(book * pBook, bool single_book = true) {
  * 组合图书信息
  * 这里的改变將影响到函数外
  */
-void combine_book_data(book * &pBook) {
+void combine_book_data(book * &pBookHead) {
     book * pHead = generate_book_link_table();
-    pBook->book_id = get_max_book_id(pHead) + 1;
-    pBook->book_amount++;
-    pBook->book_current_amount++;
-    pBook->book_status = true;
+    pBookHead->book_id = get_max_book_id(pHead) + 1;
+    pBookHead->book_amount++;
+    pBookHead->book_current_amount++;
+    pBookHead->book_status = true;
 }
 
 /**
@@ -725,13 +727,13 @@ book * generate_book_link_table() {
 
 bool book_exists(std::string isbn) {
 
-    book * pBook = generate_book_link_table();
-    while (pBook != NULL) {
+    book * pBookHead = generate_book_link_table();
+    while (pBookHead != NULL) {
         // 相等为 0
-        if (!pBook->isbn.compare(isbn)) {
+        if (!pBookHead->isbn.compare(isbn)) {
             return true;
         }
-        pBook = pBook->next;
+        pBookHead = pBookHead->next;
     }
 
     return false;
@@ -744,9 +746,9 @@ bool book_exists(std::string isbn) {
  * 最后保存到文件。
  */
 void modify_and_save_book_info(std::string isbn) {
-    book * pBook = generate_book_link_table();
+    book * pBookHead = generate_book_link_table();
 
-    book * pCurr = pBook;
+    book * pCurr = pBookHead;
 
     while (pCurr != NULL) {
 
@@ -758,7 +760,7 @@ void modify_and_save_book_info(std::string isbn) {
             pCurr->book_amount++;
             pCurr->book_current_amount++;
             pCurr->book_status = true;
-            save_all_books(pBook);
+            save_all_books(pBookHead);
             break;
             
         }
@@ -786,8 +788,11 @@ void save_all_books(book * &pHead) {
 }
 
  
-void print_book(book * pBook) {
-    std::cout << pBook->book_id << std::endl;
+void print_book(book * pBookHead) {
+    while (pBookHead != NULL) {
+        std::cout << pBookHead->book_id << std::endl;
+        pBookHead = pBookHead->next;
+    }
 }
 
 void display_search_book() {
@@ -811,12 +816,12 @@ int display_search_book_select() {
 
 /**
  * 按条件搜索图书 
- * \param pBook 图书结构的指针
+ * \param pBookHead 图书结构的指针
  * \param condition 查询条件，有 ISBN、图书名、作者、出版社、图书种类 几种条件，支持模糊搜索
  * \param keyword 查询关键词
  * \return 0 重新输入关键字 1 没有找到关键词
  */
-int search_books(book * pBook, check_condition condition = ALL, std::string keyword = "") {
+int search_books(book * pBookHead, check_condition condition = ALL, std::string keyword = "") {
 
     if ((!keyword.compare("")) && (condition != ALL)) {
         // 关键字为空
@@ -830,7 +835,7 @@ int search_books(book * pBook, check_condition condition = ALL, std::string keyw
     keyword = "*" + keyword + "*";
     // 统计条目的总数量
     int count = 0; 
-    while (pBook != NULL) {
+    while (pBookHead != NULL) {
         //std::stringstream ss_keyword("");
         //
         count ++;
@@ -840,41 +845,41 @@ int search_books(book * pBook, check_condition condition = ALL, std::string keyw
                 // 按 ISBN 查询
                 //ss_keyword << '*' << keyword << "*";
                 //std::cout << ss_keyword.str() << std::endl;
-                //std::cout << pBook->isbn << std::endl;
-                if (!fnmatch(keyword.c_str(), pBook->isbn.c_str(), FNM_NOESCAPE | FNM_CASEFOLD)) {
+                //std::cout << pBookHead->isbn << std::endl;
+                if (!fnmatch(keyword.c_str(), pBookHead->isbn.c_str(), FNM_NOESCAPE | FNM_CASEFOLD)) {
                     // fnmatch 返回值为 0 时表示匹配到
-                    std::cout << "找到" << pBook->book_id << "    " << pBook->isbn << "   " << pBook->book_name <<  std::endl;
+                    std::cout << "找到" << pBookHead->book_id << "    " << pBookHead->isbn << "   " << pBookHead->book_name <<  std::endl;
                     found = true;       
                 }
                 break;
             case NAME:
-                if (!fnmatch(keyword.c_str(), pBook->book_name.c_str(), FNM_NOESCAPE | FNM_CASEFOLD)) {
+                if (!fnmatch(keyword.c_str(), pBookHead->book_name.c_str(), FNM_NOESCAPE | FNM_CASEFOLD)) {
                     // fnmatch 返回值为 0 时表示匹配到
-                    std::cout << "找到" << pBook->isbn << "   " << pBook->book_name <<  std::endl;
+                    std::cout << "找到" << pBookHead->isbn << "   " << pBookHead->book_name <<  std::endl;
                     found = true;       
                 }
                 // 按图书名查询
                 break;
             case AUTHOR:
-                if (!fnmatch(keyword.c_str(), pBook->author.c_str(), FNM_NOESCAPE | FNM_CASEFOLD)) {
+                if (!fnmatch(keyword.c_str(), pBookHead->author.c_str(), FNM_NOESCAPE | FNM_CASEFOLD)) {
                     // fnmatch 返回值为 0 时表示匹配到
-                    std::cout << "找到" << pBook->isbn << "   " << pBook->book_name <<  std::endl;
+                    std::cout << "找到" << pBookHead->isbn << "   " << pBookHead->book_name <<  std::endl;
                     found = true;       
                 }
                 // 按作者查询
                 break;
             case PUBLISHER:
-                if (!fnmatch(keyword.c_str(), pBook->book_publisher.c_str(), FNM_NOESCAPE | FNM_CASEFOLD)) {
+                if (!fnmatch(keyword.c_str(), pBookHead->book_publisher.c_str(), FNM_NOESCAPE | FNM_CASEFOLD)) {
                     // fnmatch 返回值为 0 时表示匹配到
-                    std::cout << "找到" << pBook->isbn << "   " << pBook->book_name <<  std::endl;
+                    std::cout << "找到" << pBookHead->isbn << "   " << pBookHead->book_name <<  std::endl;
                     found = true;       
                 }
                 // 按出版社查询
                 break;
             case CATEGORY:
-                if (!fnmatch(keyword.c_str(), pBook->book_category.c_str(), FNM_NOESCAPE | FNM_CASEFOLD)) {
+                if (!fnmatch(keyword.c_str(), pBookHead->book_category.c_str(), FNM_NOESCAPE | FNM_CASEFOLD)) {
                     // fnmatch 返回值为 0 时表示匹配到
-                    std::cout << "找到" << pBook->isbn << "   " << pBook->book_name <<  std::endl;
+                    std::cout << "找到" << pBookHead->isbn << "   " << pBookHead->book_name <<  std::endl;
                     found = true;       
                 }
                 // 按图书种类查询
@@ -883,11 +888,11 @@ int search_books(book * pBook, check_condition condition = ALL, std::string keyw
             default:
                 // 所有图书列表
                 found = true;
-                std::cout << pBook->isbn << "   " << pBook->book_name <<  std::endl;
+                std::cout << pBookHead->book_id << "    " << pBookHead->isbn << "   " << pBookHead->book_name <<  std::endl;
                 break;
                 
         }
-        pBook = pBook->next;
+        pBookHead = pBookHead->next;
 
     }
 
@@ -911,21 +916,21 @@ int search_books(book * pBook, check_condition condition = ALL, std::string keyw
     //TextTable t( '-', '|', '+' );
 
     /*
-    while (pBook != NULL) {
-        std::cout << std::setw(10) <<  std::setiosflags(std::ios::right)<< pBook->book_id;
-        std::cout << std::setw(20) <<  std::setiosflags(std::ios::right)<< pBook->isbn;
-        std::cout <<std::setw(90) << std::setiosflags(std::ios::left)<< pBook->book_name;
-        std::cout << std::setw(20) <<  std::setiosflags(std::ios::right)<<pBook->author;
-        std::cout << std::setw(50) <<  std::setiosflags(std::ios::right)<<pBook->book_publisher;
-        std::cout << std::setw(20) <<  std::setiosflags(std::ios::right)<< pBook->book_category;
-        std::cout << std::setw(5) <<  std::setiosflags(std::ios::right)<<pBook->price;
-        std::cout << std::setw(5) <<  std::setiosflags(std::ios::right)<<pBook->borrow_count;
-        std::cout << std::setw(5) <<  std::setiosflags(std::ios::right)<<pBook->book_amount;
-        std::cout << std::setw(5) <<  std::setiosflags(std::ios::right)<<pBook->book_current_amount;
-        std::cout << std::setw(5) <<  std::setiosflags(std::ios::right)<<pBook->appointment;
-        std::cout << std::setw(5) <<  std::setiosflags(std::ios::right)<<pBook->book_status;
-        std::cout << std::setw(20) <<  std::setiosflags(std::ios::right)<<pBook->last_borrow_date;
-        std::cout << std::setw(20) <<  std::setiosflags(std::ios::right)<<pBook->last_return_date;
+    while (pBookHead != NULL) {
+        std::cout << std::setw(10) <<  std::setiosflags(std::ios::right)<< pBookHead->book_id;
+        std::cout << std::setw(20) <<  std::setiosflags(std::ios::right)<< pBookHead->isbn;
+        std::cout <<std::setw(90) << std::setiosflags(std::ios::left)<< pBookHead->book_name;
+        std::cout << std::setw(20) <<  std::setiosflags(std::ios::right)<<pBookHead->author;
+        std::cout << std::setw(50) <<  std::setiosflags(std::ios::right)<<pBookHead->book_publisher;
+        std::cout << std::setw(20) <<  std::setiosflags(std::ios::right)<< pBookHead->book_category;
+        std::cout << std::setw(5) <<  std::setiosflags(std::ios::right)<<pBookHead->price;
+        std::cout << std::setw(5) <<  std::setiosflags(std::ios::right)<<pBookHead->borrow_count;
+        std::cout << std::setw(5) <<  std::setiosflags(std::ios::right)<<pBookHead->book_amount;
+        std::cout << std::setw(5) <<  std::setiosflags(std::ios::right)<<pBookHead->book_current_amount;
+        std::cout << std::setw(5) <<  std::setiosflags(std::ios::right)<<pBookHead->appointment;
+        std::cout << std::setw(5) <<  std::setiosflags(std::ios::right)<<pBookHead->book_status;
+        std::cout << std::setw(20) <<  std::setiosflags(std::ios::right)<<pBookHead->last_borrow_date;
+        std::cout << std::setw(20) <<  std::setiosflags(std::ios::right)<<pBookHead->last_return_date;
         std::cout << std::endl;
         std::cout << "        --------------------------------------        " << std::endl;
         std::cout << std::endl;
@@ -984,25 +989,25 @@ int search_books(book * pBook, check_condition condition = ALL, std::string keyw
     
 
 
-        //std::cout << "Id:" << pBook->book_id << std::endl;
-        //std::cout << "ISBN:" << pBook->isbn << std::endl; 
-        //std::cout << "图书名:" << pBook->book_name << std::endl;
-        //std::cout << "作者:" << pBook->author << std::endl;
-        //std::cout << "出版社:" << pBook->book_publisher << std::endl;
-        //std::cout << "图书种类:" <<  pBook->book_category << std::endl;
-        //std::cout << "图书价格:" << pBook->price << std::endl;
-        //std::cout << "借阅量:" << pBook->borrow_count << std:: endl;
-        //std::cout << "总库存量:" << pBook->book_amount << std::endl;
-        //std::cout << "现库存量:" << pBook->book_current_amount << std::endl;
-        //std::cout << "预约量:" << pBook->appointment << std::endl;
-        //std::cout << "是不可借:" << pBook->book_status << std::endl;
-        //std::cout << "最近一次借出时间:" << pBook->last_borrow_date << std::endl;
-        //std::cout << "最近一次归还时间:" << pBook->last_return_date << std::endl;
+        //std::cout << "Id:" << pBookHead->book_id << std::endl;
+        //std::cout << "ISBN:" << pBookHead->isbn << std::endl; 
+        //std::cout << "图书名:" << pBookHead->book_name << std::endl;
+        //std::cout << "作者:" << pBookHead->author << std::endl;
+        //std::cout << "出版社:" << pBookHead->book_publisher << std::endl;
+        //std::cout << "图书种类:" <<  pBookHead->book_category << std::endl;
+        //std::cout << "图书价格:" << pBookHead->price << std::endl;
+        //std::cout << "借阅量:" << pBookHead->borrow_count << std:: endl;
+        //std::cout << "总库存量:" << pBookHead->book_amount << std::endl;
+        //std::cout << "现库存量:" << pBookHead->book_current_amount << std::endl;
+        //std::cout << "预约量:" << pBookHead->appointment << std::endl;
+        //std::cout << "是不可借:" << pBookHead->book_status << std::endl;
+        //std::cout << "最近一次借出时间:" << pBookHead->last_borrow_date << std::endl;
+        //std::cout << "最近一次归还时间:" << pBookHead->last_return_date << std::endl;
         //std::cout << std::endl;
         //std::cout << "        --------------------------------------        " << std::endl;
         //std::cout << std::endl;
 
-        pBook = pBook->next;
+        pBookHead = pBookHead->next;
     }    
     */
 
@@ -1012,9 +1017,9 @@ int search_books(book * pBook, check_condition condition = ALL, std::string keyw
 /*
  *
  * 读取关键词并执行搜索
- * \param check_condition
- * \param bool 
- * \param bool
+ * \param check_condition 选择条件
+ * \param bool 进入图书搜索首页 
+ * \param bool 进入图书搜索条件循环
  */
 void search_book_work(check_condition condition, bool &switchy_search_book_home, bool &search_book) {
     std::string keyword = "";
@@ -1038,11 +1043,89 @@ void search_book_work(check_condition condition, bool &switchy_search_book_home,
         case 2:
             // 找到
             std::cout << "============================================================================================" << std::endl;
-            std::cout << "+ 请输入需要操作的对象(图书编号):";
-            
+            std::cout << "+ 请输入操作代码(-1 删除图书 -2 修改图书，输入0不选择):";
+            std::string select;
+            std::getline(std::cin, select);
+
+            if (!select.compare("0")) {
+                // 不操作
+                search_book = true;
+                break;
+            } else if (!select.compare("-1")) {
+                // 删除操作 
+
+                std::cout << "请输入要进行删除的对象(图书编号)：";
+                std::getline(std::cin, select);
+                // 转换string字符串为数字
+                int i = 0;
+                convertFromString(i, select);
+                delete_book_by_id(i);
+            } else if (!select.compare("-2")) {
+                // 修改操作
+            }
+
+            search_book = true;
             break;
     }
 
+}
+
+
+void delete_book_by_id(unsigned int book_id) {
+    do_delete_book_by_id(generate_book_link_table(), book_id);
+}
+
+void do_delete_book_by_id(book * pBookHead, unsigned int id) {
+    book * pCurrent = nullptr;
+    book * pLast = nullptr;
+    book * pNext = nullptr;
+
+    bool found = false;
+
+    pCurrent = pBookHead;
+    while (pCurrent != NULL) {
+        if (pCurrent->book_id == id) {
+            if (pCurrent == pBookHead) 
+                pBookHead = pCurrent->next;
+            else
+                pLast->next = pNext;
+
+            std::cout << "以下是您需要删除的图书信息：" << std::endl;
+            std::cout << "     图书编号：" << pCurrent->book_id << std::endl;
+            std::cout << "     图书ISBN：" << pCurrent->isbn << std::endl;
+            std::cout << "     图书标题：" << pCurrent->book_name << std::endl;
+            std::cout << "您确定要删除具有以上信息的图书(Y/N)：";
+            std::cin >> select_char;
+            switch (std::tolower(select_char)) {
+                case 'y':
+                    delete pCurrent;
+                    found = true;
+                    break;
+                case 'n':
+                default:
+                    std::cout << "您放弃了上一次关于删除图书的请求！" << std::endl;
+                    break;
+            }
+
+            break;
+        }
+
+        pLast = pCurrent;
+
+        pCurrent = pCurrent->next;
+        if (pCurrent != NULL)
+            pNext = pCurrent->next;
+    }
+
+    //print_book(pBookHead);
+    //
+    if (found) {
+        save_all_books(pBookHead);
+
+        std::cout << "删除成功！" << std::endl;
+    } else {
+        std::cout << "非常抱歉！没有找到您所要删除的图书编号！" << std::endl;
+    }
 }
 
 /**
