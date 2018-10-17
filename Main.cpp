@@ -112,7 +112,7 @@ int display_search_book_select();
 int search_books(book * pBookHead, check_condition condition, std::string keyword);
 void search_book_work(check_condition condition, bool &switchy_search_book_home, bool &search_book);
 void delete_book_by_id(unsigned int book_id);
-void do_delete_book_by_id(book * pBookHead, unsigned int book_id);
+void do_delete_book_by_id(book * &pBookHead, unsigned int book_id);
 
 int main() {
 
@@ -1072,10 +1072,11 @@ void search_book_work(check_condition condition, bool &switchy_search_book_home,
 
 
 void delete_book_by_id(unsigned int book_id) {
-    do_delete_book_by_id(generate_book_link_table(), book_id);
+    book * pHead = generate_book_link_table();
+    do_delete_book_by_id(pHead, book_id);
 }
 
-void do_delete_book_by_id(book * pBookHead, unsigned int id) {
+void do_delete_book_by_id(book * &pBookHead, unsigned int id) {
     book * pCurrent = nullptr;
     book * pLast = nullptr;
     book * pNext = nullptr;
