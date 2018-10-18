@@ -1033,6 +1033,7 @@ void search_book_work(check_condition condition, bool &switchy_search_book_home,
     } 
         
 
+    std::string select;
     switch (search_books(generate_book_link_table(), condition, keyword)) {
         case 0:
             // 关键词为空
@@ -1044,7 +1045,6 @@ void search_book_work(check_condition condition, bool &switchy_search_book_home,
             // 找到
             std::cout << "============================================================================================" << std::endl;
             std::cout << "+ 请输入操作代码(-1 删除图书 -2 修改图书，输入0不选择):";
-            std::string select;
             std::getline(std::cin, select);
 
             if (!select.compare("0")) {
@@ -1115,6 +1115,7 @@ void do_delete_book_by_id(book * &pBookHead, unsigned int id) {
 
         pCurrent = pCurrent->next;
         if (pCurrent != NULL)
+            // 只要pCurrent不为空，则必须有next
             pNext = pCurrent->next;
     }
 
