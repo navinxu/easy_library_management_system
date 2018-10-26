@@ -147,6 +147,7 @@ int main() {
                     case 3:
                         // 查询图书
                         display_search_book();
+                        switchy_search_book_home = true;
                         while (switchy_search_book_home) {
                             switchy_search_book_home = false;
                             switch (display_search_book_select()) {
