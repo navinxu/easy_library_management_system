@@ -22,6 +22,7 @@
  *  * 若在库中找到相同的输入 ISBN 号，提示是否更新相关的信息(自增1)
  *  * 若在库中没有找到相同的 ISBN 号，则直接提示输入其余的图书信息项。
  * 2. 删
+ *  * 根据输入的图书编号从列表中删除
  * 3. 改
  * 4. 查
  *  * 根据“ISBN”、“图书名”、“作者”、“出版社”、“图书种类”查询，支持模糊搜索，并且分页
@@ -33,11 +34,11 @@
  * 
  *
  */
-#include <iostream>
-#include <string>
-#include <fstream>
-#include <cstring>
-#include <sstream>
+#include <iostream> // cout
+#include <string> // string
+#include <fstream> // ifstream,ofstream
+#include <cstring> // strtok,strcpy
+#include <sstream> // stringstream
 #include <iomanip>
 #include <fnmatch.h> // fnmatch
 
