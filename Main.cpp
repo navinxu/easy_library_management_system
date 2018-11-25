@@ -114,6 +114,7 @@ int search_books(book * pBookHead, check_condition condition, std::string keywor
 void search_book_work(check_condition condition, bool &switchy_search_book_home, bool &search_book);
 void delete_book_by_id(unsigned int book_id);
 void do_delete_book_by_id(book * &pBookHead, unsigned int book_id);
+std::string strip_space(std::string input_str);
 
 int main() {
 
@@ -359,6 +360,8 @@ int add_book() {
             //std::cin >> new_book->isbn;
             std::getline(std::cin, new_book->isbn);
 
+            new_book->isbn = strip_space(new_book->isbn);
+
             if (!new_book->isbn.compare("0")) {
                 return 0; // 如果输入 0 ，退出程序
             } else if (!new_book->isbn.compare("-1")) {
@@ -417,6 +420,8 @@ int add_book() {
             //std::getline(std::cin, new_book->book_name, '#');
             std::getline(std::cin, new_book->book_name);
 
+            new_book->book_name = strip_space(new_book->book_name);
+
             if (!new_book->book_name.compare("")){
                 switchy_add = true;
             }
@@ -428,6 +433,8 @@ int add_book() {
 
             std::cout << "作者：";
             std::getline(std::cin, new_book->author);
+
+            new_book->author = strip_space(new_book->author);
 
             if (!new_book->author.compare("")) {
                 switchy_add = true;
@@ -441,6 +448,8 @@ int add_book() {
             //std::cin >> new_book->book_category;
             std::getline(std::cin, new_book->book_category);
 
+            new_book->book_category = strip_space(new_book->book_category);
+
             if (!new_book->book_category.compare(""))
                 switchy_add = true;
 
@@ -453,6 +462,7 @@ int add_book() {
             //std::cin >> new_book->book_publisher;
             std::getline(std::cin, new_book->book_publisher);
             
+            new_book->book_publisher = strip_space(new_book->book_publisher);
             if (!new_book->book_publisher.compare("")) 
                 switchy_add = true;
         }
@@ -464,6 +474,8 @@ int add_book() {
             //std::cout << "图书价格请务必输入数字，否则将可能出现无法意料的故障！" << std::endl;
             std::cout << "图书价格：";
             std::getline(std::cin, price);
+
+            price = strip_space(price);
 
             if (!price.compare("")) 
                 switchy_add = true;
@@ -1130,6 +1142,26 @@ void do_delete_book_by_id(book * &pBookHead, unsigned int id) {
     } else {
         std::cout << "非常抱歉！没有找到您所要删除的图书编号！" << std::endl;
     }
+}
+
+/**
+ *
+ * 工具函数
+ * 去除字符串头尾的空格
+ * @param input_str string 源字符串
+ * @return 除去空格之后的字符串
+ *
+ */
+std::string strip_space(std::string input_str) {
+    
+    std::string output_str("");
+    for (int i = 0; i < input_str.size(); i ++) {
+        if ((input_str[i] == ' ') || (input_str[i] == '\t') || (input_str[i] == '\n'))
+            continue;
+        output_str += input_str[i];
+    }
+
+    return output_str;
 }
 
 /**
