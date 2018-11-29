@@ -41,6 +41,7 @@
 #include <sstream> // stringstream
 #include <iomanip>
 #include <fnmatch.h> // fnmatch
+#include <cctype> // isspace
 
 int select_num = 0;
 char select_char = 'C';
@@ -1155,10 +1156,10 @@ void do_delete_book_by_id(book * &pBookHead, unsigned int id) {
 std::string strip_space(std::string input_str) {
     
     std::string output_str("");
-    for (int i = 0; i < input_str.size(); i ++) {
-        if ((input_str[i] == ' ') || (input_str[i] == '\t') || (input_str[i] == '\n'))
+    for (auto c: input_str) {
+        if (isspace(c))
             continue;
-        output_str += input_str[i];
+        output_str += c;
     }
 
     return output_str;
