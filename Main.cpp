@@ -949,6 +949,7 @@ int search_books(book * pBookHead, check_condition condition = ALL, std::string 
 
         if (found && every_found) {
             std::cout << "找到" << pBookHead->isbn << "   " << pBookHead->book_name <<  std::endl;
+            // sort_res_link_table(pBookSearchRes);
         
         }
         
