@@ -948,9 +948,16 @@ int search_books(book * pBookHead, check_condition condition = ALL, std::string 
         }
 
         if (found && every_found) {
-            std::cout << "找到" << pBookHead->isbn << "   " << pBookHead->book_name <<  std::endl;
+            //std::cout << "找到" << pBookHead->isbn << "   " << pBookHead->book_name <<  std::endl;
             // sort_res_link_table(pBookSearchRes);
+            if (!pBookSearchRes) {
+                pBookSearchRes = pBookHead;
+                pBookSearchResCurrent = pBookSearchRes;
+            } else {
+                 
+            }
         
+            pBookSearchResLast = pBookSearchRes;
         }
         
         pBookHead = pBookHead->next;
@@ -1111,11 +1118,6 @@ void sort_res_link_table(book * &pBookHead, sort_condition condition = SORT_ID, 
 std::string strip_space(std::string input_str) {
     
     std::string output_str("");
-    for (auto c: input_str) {
-        if (isspace(c))
-            continue;
-        output_str += c;
-    }
 
     return output_str;
 }
