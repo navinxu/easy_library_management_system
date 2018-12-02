@@ -136,7 +136,7 @@ int search_books(book * pBookHead, check_condition condition, std::string keywor
 void search_book_work(check_condition condition, bool &switchy_search_book_home, bool &search_book);
 void delete_book_by_id(unsigned int book_id);
 void do_delete_book_by_id(book * &pBookHead, unsigned int book_id);
-std::string strip_space(std::string input_str);
+std::string strip_space_begin_end(std::string input_str);
 void sort_res_link_table(book * &pBookHead, sort_condition condition, sort_order order);
 
 int main() {
@@ -383,7 +383,7 @@ int add_book() {
             //std::cin >> new_book->isbn;
             std::getline(std::cin, new_book->isbn);
 
-            new_book->isbn = strip_space(new_book->isbn);
+            new_book->isbn = strip_space_begin_end(new_book->isbn);
 
             if (!new_book->isbn.compare("0")) {
                 return 0; // 如果输入 0 ，退出程序
@@ -443,7 +443,7 @@ int add_book() {
             //std::getline(std::cin, new_book->book_name, '#');
             std::getline(std::cin, new_book->book_name);
 
-            new_book->book_name = strip_space(new_book->book_name);
+            new_book->book_name = strip_space_begin_end(new_book->book_name);
 
             if (!new_book->book_name.compare("")){
                 switchy_add = true;
@@ -457,7 +457,7 @@ int add_book() {
             std::cout << "作者：";
             std::getline(std::cin, new_book->author);
 
-            new_book->author = strip_space(new_book->author);
+            new_book->author = strip_space_begin_end(new_book->author);
 
             if (!new_book->author.compare("")) {
                 switchy_add = true;
@@ -471,7 +471,7 @@ int add_book() {
             //std::cin >> new_book->book_category;
             std::getline(std::cin, new_book->book_category);
 
-            new_book->book_category = strip_space(new_book->book_category);
+            new_book->book_category = strip_space_begin_end(new_book->book_category);
 
             if (!new_book->book_category.compare(""))
                 switchy_add = true;
@@ -485,7 +485,7 @@ int add_book() {
             //std::cin >> new_book->book_publisher;
             std::getline(std::cin, new_book->book_publisher);
             
-            new_book->book_publisher = strip_space(new_book->book_publisher);
+            new_book->book_publisher = strip_space_begin_end(new_book->book_publisher);
             if (!new_book->book_publisher.compare("")) 
                 switchy_add = true;
         }
@@ -498,7 +498,7 @@ int add_book() {
             std::cout << "图书价格：";
             std::getline(std::cin, price);
 
-            price = strip_space(price);
+            price = strip_space_begin_end(price);
 
             if (!price.compare("")) 
                 switchy_add = true;
@@ -860,7 +860,7 @@ int display_search_book_select() {
  */
 int search_books(book * pBookHead, check_condition condition = ALL, std::string keyword = "") {
 
-    keyword = strip_space(keyword);
+    keyword = strip_space_begin_end(keyword);
     if ((!keyword.compare("")) && (condition != ALL)) {
         // 关键字为空
         std::cout << "关键词为空，请重新输入。" << std::endl;
@@ -1117,7 +1117,7 @@ void sort_res_link_table(book * &pBookHead, sort_condition condition = SORT_ID, 
  * @return 除去空格之后的字符串
  *
  */
-std::string strip_space(const std::string input_str) {
+std::string strip_space_begin_end(const std::string input_str) {
 
     // 去除头部空格
     std::string::size_type index_begin = 0;
