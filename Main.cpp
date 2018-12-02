@@ -860,6 +860,7 @@ int display_search_book_select() {
  */
 int search_books(book * pBookHead, check_condition condition = ALL, std::string keyword = "") {
 
+    keyword = strip_space(keyword);
     if ((!keyword.compare("")) && (condition != ALL)) {
         // 关键字为空
         std::cout << "关键词为空，请重新输入。" << std::endl;
@@ -874,15 +875,12 @@ int search_books(book * pBookHead, check_condition condition = ALL, std::string 
     keyword = "*" + keyword + "*";
     // 统计查询结果条目的总数量
     int res_count = 0; 
-    // 统计结果链表中条目的序号
-    int link_count = 0;
 
     // 将查询结果组成新的链表
-    book * pBookSearchRes = NULL;
-    book * pBookSearchResCurrent = NULL;
-    book * pBookSearchResLast = NULL;
-    book * pBookLast = NULL;
-    while (pBookHead != NULL) {
+    book * pBookSearchRes = nullptr;
+    book * pBookSearchResLast = nullptr;
+    book * pBookLast = nullptr;
+    while (pBookHead != nullptr) {
         //std::stringstream ss_keyword("");
         //
         every_found = false;
@@ -950,19 +948,21 @@ int search_books(book * pBookHead, check_condition condition = ALL, std::string 
         if (found && every_found) {
             //std::cout << "找到" << pBookHead->isbn << "   " << pBookHead->book_name <<  std::endl;
             // sort_res_link_table(pBookSearchRes);
-            if (!pBookSearchRes) {
+            //
+            if (!pBookSearchRes) 
                 pBookSearchRes = pBookHead;
-                pBookSearchResCurrent = pBookSearchRes;
-            } else {
-                 
-            }
-        
-            pBookSearchResLast = pBookSearchRes;
+            else
+                pBookSearchResLast->next = pBookHead;
+            pBookSearchResLast = pBookHead;
+
         }
         
         pBookHead = pBookHead->next;
 
     }
+
+    if (pBookSearchRes)
+        pBookSearchResLast->next = nullptr;
 
     if (found)
         sort_res_link_table(pBookSearchRes, SORT_ID, SORT_ASC);
@@ -1100,8 +1100,10 @@ void do_delete_book_by_id(book * &pBookHead, unsigned int id) {
  */ 
 void sort_res_link_table(book * &pBookHead, sort_condition condition = SORT_ID, sort_order order = SORT_ASC) {
 
-    while (pBookHead != NULL) {
-        std::cout << "找到" << pBookHead->isbn << "   " << pBookHead->book_name <<  std::endl;
+    unsigned int num = 0;
+    while (pBookHead != nullptr) {
+        num ++;
+        std::cout << num << "找到" << pBookHead->isbn << "   " << pBookHead->book_name <<  std::endl;
         pBookHead = pBookHead->next;
     }
 
