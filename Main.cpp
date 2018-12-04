@@ -56,7 +56,7 @@ struct reader
     std::string last_borrow_date;//上次借阅时间，默认为0000.00.00
     std::string borrow[10];//你所借书的的编号，最多10本
     bool is_admin = false; //是否管理员，默认不是
-    reader * next = NULL;
+    reader * next = nullptr;
 };
 
 struct book
@@ -75,7 +75,7 @@ struct book
     bool book_status = false;//是否可借,初始为不可以
     std::string last_borrow_date = "0000-00-00";//图书最近一次借出时间，默认为0000-00-00；
     std::string last_return_date = "0000-00-00";//图书最近一次归还时间，默认为0000-00-00；
-    book * next = NULL;
+    book * next = nullptr;
 };
 
 /*
@@ -590,17 +590,17 @@ void combine_book_data(book * &pBookHead) {
  */
 int get_max_book_id(book * pHead) {
 
-    if (pHead == NULL) {
+    if (pHead == nullptr) {
         return 0;
     }
 
-    book * pTmp = NULL;
-    while (pHead != NULL) {
+    book * pTmp = nullptr;
+    while (pHead != nullptr) {
 
         pTmp = pHead;
         pHead = pHead->next;
 
-        if (pHead == NULL) {
+        if (pHead == nullptr) {
             //cout << "Last 1:" << pTmp->book_id << endl;
             return pTmp->book_id;
         }
@@ -668,9 +668,9 @@ book * generate_book_link_table() {
     char* tmp;
     char* line;
     unsigned short count = 0;
-    book * pHead = NULL;
-    book * pCurrent = NULL;
-    book * pLast = NULL;
+    book * pHead = nullptr;
+    book * pCurrent = nullptr;
+    book * pLast = nullptr;
     while (!fin.eof()) {
         getline(fin, _line);
         //std::cout << str << endl;
@@ -678,10 +678,10 @@ book * generate_book_link_table() {
         tmp = std::strtok(line, delim);
         count = 0;
         
-        if (tmp != NULL) 
+        if (tmp != nullptr) 
             pCurrent = new book;
 
-        while (tmp != NULL) {
+        while (tmp != nullptr) {
             //std::cout << tmp << endl;
         
             switch (++count) {
@@ -731,11 +731,11 @@ book * generate_book_link_table() {
                     pCurrent->last_return_date = tmp;
                     break;
             }
-            tmp = std::strtok(NULL, delim);
+            tmp = std::strtok(nullptr, delim);
         }
 
 
-        if (pHead == NULL) {
+        if (pHead == nullptr) {
             pHead = pCurrent;
         } else {
             pLast->next = pCurrent;
@@ -753,8 +753,8 @@ book * generate_book_link_table() {
 
     fin.close();
 
-    if (pHead != NULL) {
-        pLast->next = NULL;
+    if (pHead != nullptr) {
+        pLast->next = nullptr;
     }
 
 
@@ -765,7 +765,7 @@ book * generate_book_link_table() {
 bool book_exists(std::string isbn) {
 
     book * pBookHead = generate_book_link_table();
-    while (pBookHead != NULL) {
+    while (pBookHead != nullptr) {
         // 相等为 0
         if (!pBookHead->isbn.compare(isbn)) {
             return true;
@@ -787,7 +787,7 @@ void modify_and_save_book_info(std::string isbn) {
 
     book * pCurr = pBookHead;
 
-    while (pCurr != NULL) {
+    while (pCurr != nullptr) {
 
         if (!pCurr->isbn.compare(isbn)) {
             // 找到
@@ -816,7 +816,7 @@ void modify_and_save_book_info(std::string isbn) {
 void save_all_books(book * &pHead) {
     get_file_write_handler("books.txt", 'T').close();
 
-    while (pHead != NULL) {
+    while (pHead != nullptr) {
 
         save_book(pHead, false);
 
@@ -826,7 +826,7 @@ void save_all_books(book * &pHead) {
 
  
 void print_book(book * pBookHead) {
-    while (pBookHead != NULL) {
+    while (pBookHead != nullptr) {
         std::cout << pBookHead->book_id << std::endl;
         pBookHead = pBookHead->next;
     }
@@ -1048,7 +1048,7 @@ void do_delete_book_by_id(book * &pBookHead, unsigned int id) {
     bool found = false;
 
     pCurrent = pBookHead;
-    while (pCurrent != NULL) {
+    while (pCurrent != nullptr) {
         if (pCurrent->book_id == id) {
             if (pCurrent == pBookHead) 
                 pBookHead = pCurrent->next;
@@ -1078,7 +1078,7 @@ void do_delete_book_by_id(book * &pBookHead, unsigned int id) {
         pLast = pCurrent;
 
         pCurrent = pCurrent->next;
-        if (pCurrent != NULL)
+        if (pCurrent != nullptr)
             // 只要pCurrent不为空，则必须有next
             pNext = pCurrent->next;
     }
