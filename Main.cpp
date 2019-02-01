@@ -19,7 +19,7 @@
  * ### 图书信息管理
  * 1. 增
  *  只有管理员才有增加图书的权限  
- *  * 若在库中找到相同的输入 ISBN 号，提示是否更新相关的信息(自增1)
+ *  * 若在库中找到相同的输入 ISBN 号，提示是否更新图书总库存数目(自增1)
  *  * 若在库中没有找到相同的 ISBN 号，则直接提示输入其余的图书信息项。
  * 2. 删
  *  * 根据输入的图书编号从列表中删除
@@ -1103,7 +1103,7 @@ void sort_res_link_table(book * &pBookHead, sort_condition condition = SORT_ID, 
     unsigned int num = 0;
     while (pBookHead != nullptr) {
         num ++;
-        std::cout << num << "找到" << pBookHead->isbn << "   " << pBookHead->book_name <<  std::endl;
+        std::cout << num << "找到 " << pBookHead->book_id << "  " << pBookHead->isbn << "   " << pBookHead->book_name <<  std::endl;
         pBookHead = pBookHead->next;
     }
 
