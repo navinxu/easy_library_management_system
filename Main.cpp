@@ -1,15 +1,15 @@
 /*================================================================
-*   Copyright (C) 2018 Navin Xu. All rights reserved.
-*   
-*   文件名称：Main.cpp
-*   创 建 者：Navin Xu
-*   电子邮箱：admin@navinxu.com
-*   创建日期：2018年08月17日
-*   描    述：C++版简易图书管理系统
-================================================================*/
+ *   Copyright (C) 2018 Navin Xu. All rights reserved.
+ *
+ *   文件名称：Main.cpp
+ *   创 建 者：Navin Xu
+ *   电子邮箱：admin@navinxu.com
+ *   创建日期：2018年08月17日
+ *   描    述：C++版简易图书管理系统
+ ================================================================*/
 /**
  *
- * # C++版图书管理系统需求设计 
+ * # C++版图书管理系统需求设计
  * ## 角色
  *  1. 管理员
  *  2. 读者
@@ -18,7 +18,7 @@
  *  管理员首页有图书信息管理、图书借还管理、用户管理等功能，其中图书信息管理有增、删、改、查功能，图书借还功能有借出图书列表（当前数目、借出日期时间、按isbn、按日期时间、借出数目排序，或者按读者列出）、借还记录（按读者查询、按图书查询）、图书预约（最多预约10本图书），用户管理功能有增加用户、删除用户、修改用户信息、查询用户等功能。
  * ### 图书信息管理
  * 1. 增
- *  只有管理员才有增加图书的权限  
+ *  只有管理员才有增加图书的权限
  *  * 若在库中找到相同的输入 ISBN 号，提示是否更新图书总库存数目(自增1)
  *  * 若在库中没有找到相同的 ISBN 号，则直接提示输入其余的图书信息项。
  * 2. 删
@@ -28,10 +28,10 @@
  *  * 根据“ISBN”、“图书名”、“作者”、“出版社”、“图书种类”查询，支持模糊搜索，并且分页
  *  * 其中，所有条件都可选择模糊匹配，或者完全匹配
  *  * 搜寻结果可根据以上所列的查询条件进行排序，顺序或倒序，也可以按：价格、总库存量、现库存量、预约量、是否可借、最近一次借出时间、最近一次归还时间，进行排序
- *     
+ *
  * ### 图书借还管理
  * 占位符
- * 
+ *
  *
  */
 #include <iostream> // cout
@@ -389,7 +389,7 @@ int add_book() {
                 return 0; // 如果输入 0 ，退出程序
             } else if (!new_book->isbn.compare("-1")) {
                 return -1; // 输入1 ，返回管理首页
-            } 
+            }
 
             if (book_exists(new_book->isbn)) {
                 // 存在
@@ -431,7 +431,7 @@ int add_book() {
             }
         }
 
-        if (is_break) 
+        if (is_break)
             continue;
 
         switchy_add = true;
@@ -484,9 +484,9 @@ int add_book() {
             std::cout << "出版社：";
             //std::cin >> new_book->book_publisher;
             std::getline(std::cin, new_book->book_publisher);
-            
+
             new_book->book_publisher = strip_space_begin_end(new_book->book_publisher);
-            if (!new_book->book_publisher.compare("")) 
+            if (!new_book->book_publisher.compare(""))
                 switchy_add = true;
         }
 
@@ -500,17 +500,17 @@ int add_book() {
 
             price = strip_space_begin_end(price);
 
-            if (!price.compare("")) 
+            if (!price.compare(""))
                 switchy_add = true;
         }
 
         convertFromString(new_book->price, price);
-        
+
 
         std::cout << "=======================" << std::endl;
 
         bool switchy_is_to_save = true;
-        
+
         while (switchy_is_to_save) {
             switchy_is_to_save = false;
             switch (std::toupper(ensure_book_info(new_book))) {
@@ -550,10 +550,10 @@ char ensure_book_info(book * pBookHead) {
     std::cin >> ensure;
 
     return ensure;
-} 
+}
 
 /**
- * 
+ *
  * 保存图书信息
  */
 
@@ -568,7 +568,7 @@ void save_book(book * pBookHead, bool single_book = true) {
     if (single_book) {
         std::cout << "保存成功！" << std::endl;
     }
-} 
+}
 
 /**
  *
@@ -677,13 +677,13 @@ book * generate_book_link_table() {
         line = string_to_char(_line);
         tmp = std::strtok(line, delim);
         count = 0;
-        
-        if (tmp != nullptr) 
+
+        if (tmp != nullptr)
             pCurrent = new book;
 
         while (tmp != nullptr) {
             //std::cout << tmp << endl;
-        
+
             switch (++count) {
                 case 1:
                     //cout << "1:" << tmp << endl;
@@ -746,10 +746,10 @@ book * generate_book_link_table() {
     }
 
     /*
-    if (fin.eof()) {
-        cout << "file empty" << endl;
-    }
-    */
+       if (fin.eof()) {
+       cout << "file empty" << endl;
+       }
+       */
 
     fin.close();
 
@@ -793,13 +793,13 @@ void modify_and_save_book_info(std::string isbn) {
             // 找到
             // 更新一些信息
             // 然后把新的信息放回到原链表中
-            
+
             pCurr->book_amount++;
             pCurr->book_current_amount++;
             pCurr->book_status = true;
             save_all_books(pBookHead);
             break;
-            
+
         }
 
         pCurr = pCurr->next;
@@ -807,7 +807,7 @@ void modify_and_save_book_info(std::string isbn) {
 
     std::cout << "所有改动更新成功！" << std::endl;
 }
- 
+
 /*
  *
  * 保存所有的图书信息
@@ -824,7 +824,7 @@ void save_all_books(book * &pHead) {
     }
 }
 
- 
+
 void print_book(book * pBookHead) {
     while (pBookHead != nullptr) {
         std::cout << pBookHead->book_id << std::endl;
@@ -852,7 +852,7 @@ int display_search_book_select() {
 }
 
 /**
- * 按条件搜索图书 
+ * 按条件搜索图书
  * \param pBookHead 图书结构的指针
  * \param condition 查询条件，有 ISBN、图书名、作者、出版社、图书种类 几种条件，支持模糊搜索
  * \param keyword 查询关键词
@@ -874,7 +874,7 @@ int search_books(book * pBookHead, check_condition condition = ALL, std::string 
     // 组装模式
     keyword = "*" + keyword + "*";
     // 统计查询结果条目的总数量
-    int res_count = 0; 
+    int res_count = 0;
 
     // 将查询结果组成新的链表
     book * pBookSearchRes = nullptr;
@@ -894,7 +894,7 @@ int search_books(book * pBookHead, check_condition condition = ALL, std::string 
                 if (!fnmatch(keyword.c_str(), pBookHead->isbn.c_str(), FNM_NOESCAPE | FNM_CASEFOLD)) {
                     // fnmatch 返回值为 0 时表示匹配到
                     //std::cout << "找到" << pBookHead->book_id << "    " << pBookHead->isbn << "   " << pBookHead->book_name <<  std::endl;
-                    found = true;       
+                    found = true;
                     every_found = true;
                 }
                 break;
@@ -902,7 +902,7 @@ int search_books(book * pBookHead, check_condition condition = ALL, std::string 
                 if (!fnmatch(keyword.c_str(), pBookHead->book_name.c_str(), FNM_NOESCAPE | FNM_CASEFOLD)) {
                     // fnmatch 返回值为 0 时表示匹配到
                     //std::cout << "找到" << pBookHead->isbn << "   " << pBookHead->book_name <<  std::endl;
-                    found = true;       
+                    found = true;
                     every_found = true;
                 }
                 // 按图书名查询
@@ -911,7 +911,7 @@ int search_books(book * pBookHead, check_condition condition = ALL, std::string 
                 if (!fnmatch(keyword.c_str(), pBookHead->author.c_str(), FNM_NOESCAPE | FNM_CASEFOLD)) {
                     // fnmatch 返回值为 0 时表示匹配到
                     //std::cout << "找到" << pBookHead->isbn << "   " << pBookHead->book_name <<  std::endl;
-                    found = true;       
+                    found = true;
                     every_found = true;
                 }
                 // 按作者查询
@@ -920,7 +920,7 @@ int search_books(book * pBookHead, check_condition condition = ALL, std::string 
                 if (!fnmatch(keyword.c_str(), pBookHead->book_publisher.c_str(), FNM_NOESCAPE | FNM_CASEFOLD)) {
                     // fnmatch 返回值为 0 时表示匹配到
                     //std::cout << "找到" << pBookHead->isbn << "   " << pBookHead->book_name <<  std::endl;
-                    found = true;       
+                    found = true;
                     every_found = true;
                 }
                 // 按出版社查询
@@ -929,7 +929,7 @@ int search_books(book * pBookHead, check_condition condition = ALL, std::string 
                 if (!fnmatch(keyword.c_str(), pBookHead->book_category.c_str(), FNM_NOESCAPE | FNM_CASEFOLD)) {
                     // fnmatch 返回值为 0 时表示匹配到
                     //std::cout << "找到" << pBookHead->isbn << "   " << pBookHead->book_name <<  std::endl;
-                    found = true;       
+                    found = true;
                     every_found = true;
                 }
                 // 按图书种类查询
@@ -942,21 +942,21 @@ int search_books(book * pBookHead, check_condition condition = ALL, std::string 
                 res_count ++;
                 //std::cout << pBookHead->book_id << "    " << pBookHead->isbn << "   " << pBookHead->book_name <<  std::endl;
                 break;
-                
+
         }
 
         if (found && every_found) {
             //std::cout << "找到" << pBookHead->isbn << "   " << pBookHead->book_name <<  std::endl;
             // sort_res_link_table(pBookSearchRes);
             //
-            if (!pBookSearchRes) 
+            if (!pBookSearchRes)
                 pBookSearchRes = pBookHead;
             else
                 pBookSearchResLast->next = pBookHead;
             pBookSearchResLast = pBookHead;
 
         }
-        
+
         pBookHead = pBookHead->next;
 
     }
@@ -982,7 +982,7 @@ int search_books(book * pBookHead, check_condition condition = ALL, std::string 
  *
  * 读取关键词并执行搜索
  * \param check_condition 选择条件
- * \param bool 进入图书搜索首页 
+ * \param bool 进入图书搜索首页
  * \param bool 进入图书搜索条件循环
  */
 void search_book_work(check_condition condition, bool &switchy_search_book_home, bool &search_book) {
@@ -994,8 +994,8 @@ void search_book_work(check_condition condition, bool &switchy_search_book_home,
     if (!keyword.compare("-1")) {
         switchy_search_book_home = true;
         return;
-    } 
-        
+    }
+
 
     std::string select;
     switch (search_books(generate_book_link_table(), condition, keyword)) {
@@ -1016,7 +1016,7 @@ void search_book_work(check_condition condition, bool &switchy_search_book_home,
                 search_book = true;
                 break;
             } else if (!select.compare("-1")) {
-                // 删除操作 
+                // 删除操作
 
                 std::cout << "请输入要进行删除的对象(图书编号)：";
                 std::getline(std::cin, select);
@@ -1050,7 +1050,7 @@ void do_delete_book_by_id(book * &pBookHead, unsigned int id) {
     pCurrent = pBookHead;
     while (pCurrent != nullptr) {
         if (pCurrent->book_id == id) {
-            if (pCurrent == pBookHead) 
+            if (pCurrent == pBookHead)
                 pBookHead = pCurrent->next;
             else
                 pLast->next = pNext;
@@ -1097,7 +1097,7 @@ void do_delete_book_by_id(book * &pBookHead, unsigned int id) {
 /**
  *
  * 按条件/顺序对图书链表进行排序
- */ 
+ */
 void sort_res_link_table(book * &pBookHead, sort_condition condition = SORT_ID, sort_order order = SORT_ASC) {
 
     unsigned int num = 0;
@@ -1152,13 +1152,13 @@ char * string_to_char(std::string str) {
 }
 
 /*
- * 
+ *
  * 用于转换 string 为 double
  */
 template <class T>
 void convertFromString(T &value, const std::string &s) {
-  std::stringstream ss(s);
-  ss >> value;
+    std::stringstream ss(s);
+    ss >> value;
 }
 
 
