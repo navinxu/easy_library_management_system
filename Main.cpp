@@ -665,8 +665,8 @@ book * generate_book_link_table() {
 
     std::string _line;
     char* delim = string_to_char("|||");
-    char* tmp;
-    char* line;
+    char* tmp = nullptr;
+    char* line = nullptr;
     unsigned short count = 0;
     book * pHead = nullptr;
     book * pCurrent = nullptr;
@@ -762,6 +762,10 @@ book * generate_book_link_table() {
 
 }
 
+/**
+ *
+ * 通过 isbn 号查询书籍是否已经存在
+ */
 bool book_exists(std::string isbn) {
 
     book * pBookHead = generate_book_link_table();
@@ -814,6 +818,7 @@ void modify_and_save_book_info(std::string isbn) {
  *
  */
 void save_all_books(book * &pHead) {
+    // 清空原文件
     get_file_write_handler("books.txt", 'T').close();
 
     while (pHead != nullptr) {

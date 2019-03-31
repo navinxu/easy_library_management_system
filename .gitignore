@@ -4,4 +4,4 @@ tags
 *.txt
 *.out
 *.swp
-test*
+*test*.txt
