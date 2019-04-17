@@ -33,6 +33,34 @@ struct book
 
 
 /*
+ * 图书检索条件
+ */
+enum check_condition {
+    ALL,
+    ISBN,
+    NAME,
+    AUTHOR,
+    PUBLISHER,
+    CATEGORY
+};
+
+enum sort_condition {
+    SORT_ID,
+    SORT_ISBN,
+    SORT_NAME,
+    SORT_AUTHOR,
+    SORT_PUBLISHER,
+    SORT_CATEGORY,
+    SORT_PRICE,
+    SORT_AMOUNT,
+    SORT_CURRENT_AMOUNT,
+    SORT_APPOINTMENT,
+    SORT_STATUS,
+    SORT_LAST_BORROW_DATE,
+    SORT_LAST_RETURN_DATE
+};
+
+/*
  *
  * 获取文件读取流
  */
@@ -245,22 +273,71 @@ void exchange_data_for_book(book *&p, book *&q) {
 
 }
 
-book* order_by_isbn(book *pBookHead) {
+book* order_by_isbn(book *pBookHead, sort_condition sort_by) {
     
-    book * p = nullptr, *q = nullptr;
-    std::string right_str = "";
-    //std::string tmp = "";
-    for (p = pBookHead; (p != nullptr) && (p->isbn != right_str); p = p->next) {
+    book *p = nullptr, *q = nullptr, *tmp = nullptr;
+    // 应用选择法对数据进行排序
+    for (p = pBookHead; p != nullptr; p = p->next) {
+        tmp = p;
         for (q = p->next; q != nullptr; q = q->next) {
-            if (p->isbn.compare(q->isbn) > 0) {
-                /*
-                tmp = p->isbn;
-                p->isbn = q->isbn;
-                q->isbn = tmp;
-                */
-                exchange_data_for_book(p, q);
-                right_str = p->isbn;
+            switch (sort_by) {
+                case SORT_ISBN:
+                    if (tmp->isbn.compare(q->isbn) > 0) {
+                        //exchange_data_for_book(p, q);
+                        tmp = q;
+                        //std::cout << p->isbn << " - " << tmp->isbn << " - " << q->isbn << std::endl;
+                    }
+                    break;
+                case SORT_ID:
+                    /*
+                        enum sort_condition {
+                            SORT_ID,
+                            SORT_ISBN,
+                            SORT_NAME,
+                            SORT_AUTHOR,
+                            SORT_PUBLISHER,
+                            SORT_CATEGORY,
+                            SORT_PRICE,
+                            SORT_AMOUNT,
+                            SORT_CURRENT_AMOUNT,
+                            SORT_APPOINTMENT,
+                            SORT_STATUS,
+                            SORT_LAST_BORROW_DATE,
+                            SORT_LAST_RETURN_DATE
+                        };
+                        */
+                    break;
+                case SORT_NAME:
+                    break;
+                case SORT_AUTHOR:
+                    break;
+                case SORT_PUBLISHER:
+                    break;
+                case SORT_CATEGORY:
+                    break;
+                case SORT_PRICE:
+                    break;
+                case SORT_AMOUNT:
+                    break;
+                case SORT_CURRENT_AMOUNT:
+                    break;
+                case SORT_APPOINTMENT:
+                    break;
+                case SORT_STATUS:
+                    break;
+                case SORT_LAST_BORROW_DATE:
+                    break;
+                case SORT_LAST_RETURN_DATE:
+                    break;
             }
+        }
+
+        //continue;
+        if (tmp != p) {
+           // std::cout << p->isbn << " : " << tmp->isbn << std::endl;
+            exchange_data_for_book(p, tmp);
+            //std::cout << p->isbn << " = " << tmp->isbn << std::endl;
+
         }
     }
     
@@ -277,6 +354,7 @@ int main() {
     book * pBook = generate_book_link_table();
     print_book(pBook);
     print_book(order_by_isbn(pBook));
+    //order_by_isbn(pBook);
 
     return 0;
 }
