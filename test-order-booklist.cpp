@@ -72,19 +72,6 @@ enum sort_condition {
     SORT_LAST_RETURN_DATE
 };
 
-// 需包含locale、string头文件、使用setlocale函数。
-std::wstring StringToWstring(const std::string str)
-{// string转wstring
-    unsigned len = str.size() * 2;// 预留字节数
-    setlocale(LC_CTYPE, "");     //必须调用此函数
-    wchar_t *p = new wchar_t[len];// 申请一段内存存放转换后的字符串
-    std::mbstowcs(p,str.c_str(),len);// 转换
-    std::wstring str1(p);
-    delete[] p;// 释放申请的内存
-    return str1;
-}
-
-
 /*
  *
  * 获取文件读取流
@@ -115,7 +102,12 @@ char * string_to_char(std::string str) {
     return c;
 }
 
-book * generate_book_link_table() {
+/**
+ * param begin,unsigned long,the posision beginning
+ * param limit,unsigned long, the number of books fetch once
+ */
+//book * generate_book_linked_list(unsigned long begin_pos, unsigned long limit) {
+book * generate_book_linked_list() {
     std::ifstream fin = get_file_read_handler("test.txt");
 
     std::string _line;
@@ -126,7 +118,28 @@ book * generate_book_link_table() {
     book * pHead = nullptr;
     book * pCurrent = nullptr;
     book * pLast = nullptr;
+
+    //unsigned long position = 0, pos_count = 0;
+
     while (!fin.eof()) {
+
+        /*
+        if (position || limit) {
+            if (position < begin_pos) {
+                position ++;
+                continue;
+            }
+
+            if (pos_count > limit)
+                break;
+
+            position ++;
+
+            if (position >= begin_pos)
+                pos_count ++;
+        }
+        */
+
         getline(fin, _line);
         //std::cout << str << endl;
         line = string_to_char(_line);
@@ -177,7 +190,12 @@ book * generate_book_link_table() {
                     pCurrent->appointment = std::atoi(tmp);
                     break;
                 case 12:
-                    pCurrent->book_status = (bool)tmp;
+                    //pCurrent->book_status = (bool)tmp;
+                    if (!std::strcmp(tmp, "0"))
+                        pCurrent->book_status = false;
+                    else
+                        pCurrent->book_status = true;
+
                     break;
                 case 13:
                     pCurrent->last_borrow_date = tmp;
@@ -320,7 +338,7 @@ short int locale_chinese_string_compare (const std::string& s1, const std::strin
                        pb2, pb2 + s2.size());
 }
 
-book* order_by_isbn(book *pBookHead, sort_condition sort_by, order_by order) {
+book* sort_books(book *pBookHead, sort_condition sort_by, order_by order) {
     
     book *p = nullptr, *q = nullptr, *tmp = nullptr;
     short int compare = 0;
@@ -388,24 +406,144 @@ book* order_by_isbn(book *pBookHead, sort_condition sort_by, order_by order) {
                     }
                     break;
                 case SORT_AUTHOR:
+                    
+                    std::locale::global(std::locale("zh_CN.UTF-8"));
+                    compare = locale_chinese_string_compare(tmp->author, q->author);
+                    switch (order) {
+                        case ASC:
+                            if (compare > 0)
+                                tmp = q;
+                            break;
+                        case DESC:
+                            if (compare < 0)
+                                tmp = q;
+                            break;
+                    }
                     break;
                 case SORT_PUBLISHER:
+                    
+                    std::locale::global(std::locale("zh_CN.UTF-8"));
+                    compare = locale_chinese_string_compare(tmp->book_publisher, q->book_publisher);
+                    switch (order) {
+                        case ASC:
+                            if (compare > 0)
+                                tmp = q;
+                            break;
+                        case DESC:
+                            if (compare < 0)
+                                tmp = q;
+                            break;
+                    }
                     break;
                 case SORT_CATEGORY:
+                    
+                    std::locale::global(std::locale("zh_CN.UTF-8"));
+                    compare = locale_chinese_string_compare(tmp->book_category, q->book_category);
+                    switch (order) {
+                        case ASC:
+                            if (compare > 0)
+                                tmp = q;
+                            break;
+                        case DESC:
+                            if (compare < 0)
+                                tmp = q;
+                            break;
+                    }
                     break;
                 case SORT_PRICE:
+                    compare = tmp->price > q->price;
+                    switch (order) {
+                        case ASC:
+                            if (compare)
+                                tmp = q;
+                            break;
+                        case DESC:
+                            if (!compare)
+                                tmp = q;
+                            break;
+                    }
                     break;
                 case SORT_AMOUNT:
+                    compare = tmp->book_amount > q->book_amount;
+                    switch (order) {
+                        case ASC:
+                            if (compare)
+                                tmp = q;
+                            break;
+                        case DESC:
+                            if (!compare)
+                                tmp = q;
+                            break;
+                    }
                     break;
                 case SORT_CURRENT_AMOUNT:
+                    compare = tmp->book_current_amount > q->book_current_amount;
+                    switch (order) {
+                        case ASC:
+                            if (compare)
+                                tmp = q;
+                            break;
+                        case DESC:
+                            if (!compare)
+                                tmp = q;
+                            break;
+                    }
                     break;
                 case SORT_APPOINTMENT:
+                    compare = tmp->appointment > q->appointment;
+                    switch (order) {
+                        case ASC:
+                            if (compare)
+                                tmp = q;
+                            break;
+                        case DESC:
+                            if (!compare)
+                                tmp = q;
+                            break;
+                    }
                     break;
                 case SORT_STATUS:
+                    compare = tmp->book_status > q->book_status;
+                    switch (order) {
+                        case ASC:
+                            if (compare)
+                                tmp = q;
+                            break;
+                        case DESC:
+                            if (!compare)
+                                tmp = q;
+                            break;
+                    }
                     break;
                 case SORT_LAST_BORROW_DATE:
+                    
+                    std::locale::global(std::locale("zh_CN.UTF-8"));
+                    compare = locale_chinese_string_compare(tmp->last_borrow_date, q->last_borrow_date);
+                    switch (order) {
+                        case ASC:
+                            if (compare > 0)
+                                tmp = q;
+                            break;
+                        case DESC:
+                            if (compare < 0)
+                                tmp = q;
+                            break;
+                    }
                     break;
                 case SORT_LAST_RETURN_DATE:
+                    
+                    std::locale::global(std::locale("zh_CN.UTF-8"));
+                    compare = locale_chinese_string_compare(tmp->last_return_date, q->last_return_date);
+                    switch (order) {
+                        case ASC:
+                            if (compare > 0)
+                                tmp = q;
+                            break;
+                        case DESC:
+                            if (compare < 0)
+                                tmp = q;
+                            break;
+                    }
                     break;
             }
         }
@@ -429,10 +567,10 @@ book* order_by_isbn(book *pBookHead, sort_condition sort_by, order_by order) {
 
 int main() {
 
-    book * pBook = generate_book_link_table();
+    book * pBook = generate_book_linked_list();
     print_book(pBook);
-    print_book(order_by_isbn(pBook, SORT_NAME, ASC));
-    //order_by_isbn(pBook);
+    print_book(sort_books(pBook, SORT_APPOINTMENT, DESC));
+    //sort_books(pBook);
 
     return 0;
 }
