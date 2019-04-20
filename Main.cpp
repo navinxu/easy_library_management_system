@@ -123,7 +123,7 @@ std::ofstream get_file_write_handler(const char *, const char);
 void combine_book_data(book * &);
 int get_max_book_id(book *);
 char * string_to_char(std::string);
-book * generate_book_link_table();
+book * generate_book_linked_list();
 void print_book(book *);
 bool book_exists(std::string);
 void save_all_books(book *&);
@@ -137,7 +137,7 @@ void search_book_work(check_condition condition, bool &switchy_search_book_home,
 void delete_book_by_id(unsigned int book_id);
 void do_delete_book_by_id(book * &pBookHead, unsigned int book_id);
 std::string strip_space_begin_end(std::string input_str);
-void sort_res_link_table(book * &pBookHead, sort_condition condition, sort_order order);
+void sort_res_linked_list(book * &pBookHead, sort_condition condition, sort_order order);
 
 int main() {
 
@@ -576,7 +576,7 @@ void save_book(book * pBookHead, bool single_book = true) {
  * 这里的改变將影响到函数外
  */
 void combine_book_data(book * &pBookHead) {
-    book * pHead = generate_book_link_table();
+    book * pHead = generate_book_linked_list();
     pBookHead->book_id = get_max_book_id(pHead) + 1;
     pBookHead->book_amount++;
     pBookHead->book_current_amount++;
@@ -660,7 +660,7 @@ void truncate_file(const char* filename) {
     }
 }
 
-book * generate_book_link_table() {
+book * generate_book_linked_list() {
     std::ifstream fin = get_file_read_handler("books.txt");
 
     std::string _line;
@@ -768,7 +768,7 @@ book * generate_book_link_table() {
  */
 bool book_exists(std::string isbn) {
 
-    book * pBookHead = generate_book_link_table();
+    book * pBookHead = generate_book_linked_list();
     while (pBookHead != nullptr) {
         // 相等为 0
         if (!pBookHead->isbn.compare(isbn)) {
@@ -787,7 +787,7 @@ bool book_exists(std::string isbn) {
  * 最后保存到文件。
  */
 void modify_and_save_book_info(std::string isbn) {
-    book * pBookHead = generate_book_link_table();
+    book * pBookHead = generate_book_linked_list();
 
     book * pCurr = pBookHead;
 
@@ -952,7 +952,7 @@ int search_books(book * pBookHead, check_condition condition = ALL, std::string 
 
         if (found && every_found) {
             //std::cout << "找到" << pBookHead->isbn << "   " << pBookHead->book_name <<  std::endl;
-            // sort_res_link_table(pBookSearchRes);
+            // sort_res_linked_list(pBookSearchRes);
             //
             if (!pBookSearchRes)
                 pBookSearchRes = pBookHead;
@@ -970,7 +970,7 @@ int search_books(book * pBookHead, check_condition condition = ALL, std::string 
         pBookSearchResLast->next = nullptr;
 
     if (found)
-        sort_res_link_table(pBookSearchRes, SORT_ID, SORT_ASC);
+        sort_res_linked_list(pBookSearchRes, SORT_ID, SORT_ASC);
 
     if (!found) {
         std::cout << "非常抱歉！没有找到哦！" << std::endl;
@@ -1003,7 +1003,7 @@ void search_book_work(check_condition condition, bool &switchy_search_book_home,
 
 
     std::string select;
-    switch (search_books(generate_book_link_table(), condition, keyword)) {
+    switch (search_books(generate_book_linked_list(), condition, keyword)) {
         case 0:
             // 关键词为空
         case 1:
@@ -1041,7 +1041,7 @@ void search_book_work(check_condition condition, bool &switchy_search_book_home,
 
 
 void delete_book_by_id(unsigned int book_id) {
-    book * pHead = generate_book_link_table();
+    book * pHead = generate_book_linked_list();
     do_delete_book_by_id(pHead, book_id);
 }
 
@@ -1103,7 +1103,7 @@ void do_delete_book_by_id(book * &pBookHead, unsigned int id) {
  *
  * 按条件/顺序对图书链表进行排序
  */
-void sort_res_link_table(book * &pBookHead, sort_condition condition = SORT_ID, sort_order order = SORT_ASC) {
+void sort_res_linked_list(book * &pBookHead, sort_condition condition = SORT_ID, sort_order order = SORT_ASC) {
 
     unsigned int num = 0;
     while (pBookHead != nullptr) {

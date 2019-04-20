@@ -10,7 +10,8 @@
 #include <iostream> // cout
 #include <fstream> // ifstream
 #include <cstring> // strtok, strcpy
-#include <string> // string
+#include <string> // string 
+#include <locale> 
 
 struct book
 {
@@ -44,6 +45,17 @@ enum check_condition {
     CATEGORY
 };
 
+/**
+ * 排序方式
+ */
+enum order_by {
+    ASC, // 顺序
+    DESC // 倒序
+};
+
+/**
+ * 排序条件
+ */
 enum sort_condition {
     SORT_ID,
     SORT_ISBN,
@@ -59,6 +71,19 @@ enum sort_condition {
     SORT_LAST_BORROW_DATE,
     SORT_LAST_RETURN_DATE
 };
+
+// 需包含locale、string头文件、使用setlocale函数。
+std::wstring StringToWstring(const std::string str)
+{// string转wstring
+    unsigned len = str.size() * 2;// 预留字节数
+    setlocale(LC_CTYPE, "");     //必须调用此函数
+    wchar_t *p = new wchar_t[len];// 申请一段内存存放转换后的字符串
+    std::mbstowcs(p,str.c_str(),len);// 转换
+    std::wstring str1(p);
+    delete[] p;// 释放申请的内存
+    return str1;
+}
+
 
 /*
  *
@@ -273,41 +298,94 @@ void exchange_data_for_book(book *&p, book *&q) {
 
 }
 
-book* order_by_isbn(book *pBookHead, sort_condition sort_by) {
+/**
+ *
+ * s1 > s2 ret 1
+ * s1 < s2 ret -1
+ * s1 = s2 ret 0
+ * 小写字母 < 大写字母
+ * 数字：55 < 6
+ */
+short int locale_chinese_string_compare (const std::string& s1, const std::string& s2) {
+
+   const std::collate<char>& col = 
+       std::use_facet<std::collate<char> >(std::locale()); // Use the global locale
+
+   const char* pb1 = s1.data();
+   const char* pb2 = s2.data();
+
+   //return (col.compare(pb1, pb1 + s1.size(),
+   //                    pb2, pb2 + s2.size()) < 0);
+   return col.compare(pb1, pb1 + s1.size(),
+                       pb2, pb2 + s2.size());
+}
+
+book* order_by_isbn(book *pBookHead, sort_condition sort_by, order_by order) {
     
     book *p = nullptr, *q = nullptr, *tmp = nullptr;
+    short int compare = 0;
     // 应用选择法对数据进行排序
     for (p = pBookHead; p != nullptr; p = p->next) {
         tmp = p;
         for (q = p->next; q != nullptr; q = q->next) {
             switch (sort_by) {
                 case SORT_ISBN:
-                    if (tmp->isbn.compare(q->isbn) > 0) {
-                        //exchange_data_for_book(p, q);
-                        tmp = q;
-                        //std::cout << p->isbn << " - " << tmp->isbn << " - " << q->isbn << std::endl;
+                    compare = tmp->isbn.compare(q->isbn);
+                    switch (order) {
+                        case ASC:
+                            if (compare > 0)
+                                tmp = q;
+                            break;
+                        case DESC:
+                            if (compare < 0)
+                                tmp = q;
+                            break;
                     }
+                    /**
+                     *
+                        unsigned long book_id;
+                        std::string isbn;//图书检索号
+                        unsigned int borrow_count = 0;//图书借阅量,初始化为0
+                        std::string book_publisher; //出版社
+                        std::string book_name;//书名
+                        std::string book_category;//图书种类
+                        double price = 0.0;//图书价格
+                        unsigned int book_amount = 0;//图书总库存存量
+                        unsigned int book_current_amount = 0;//图书现库存量
+                        std::string author;//图书作者
+                        unsigned int appointment = 0;//图书预约量,初始化为0
+                        bool book_status = false;//是否可借,初始为不可以
+                        std::string last_borrow_date = "0000-00-00";//图书最近一次借出时间，默认为0000-00-00；
+                        std::string last_return_date = "0000-00-00";//图书最近一次归还时间，默认为0000-00-00；
+                    */
                     break;
                 case SORT_ID:
-                    /*
-                        enum sort_condition {
-                            SORT_ID,
-                            SORT_ISBN,
-                            SORT_NAME,
-                            SORT_AUTHOR,
-                            SORT_PUBLISHER,
-                            SORT_CATEGORY,
-                            SORT_PRICE,
-                            SORT_AMOUNT,
-                            SORT_CURRENT_AMOUNT,
-                            SORT_APPOINTMENT,
-                            SORT_STATUS,
-                            SORT_LAST_BORROW_DATE,
-                            SORT_LAST_RETURN_DATE
-                        };
-                        */
+                    compare = tmp->book_id > q->book_id;
+                    switch (order) {
+                        case ASC:
+                            if (compare)
+                                tmp = q;
+                            break;
+                        case DESC:
+                            if (!compare)
+                                tmp = q;
+                            break;
+                    }
                     break;
                 case SORT_NAME:
+                    
+                    std::locale::global(std::locale("zh_CN.UTF-8"));
+                    compare = locale_chinese_string_compare(tmp->book_name, q->book_name);
+                    switch (order) {
+                        case ASC:
+                            if (compare > 0)
+                                tmp = q;
+                            break;
+                        case DESC:
+                            if (compare < 0)
+                                tmp = q;
+                            break;
+                    }
                     break;
                 case SORT_AUTHOR:
                     break;
@@ -353,7 +431,7 @@ int main() {
 
     book * pBook = generate_book_link_table();
     print_book(pBook);
-    print_book(order_by_isbn(pBook));
+    print_book(order_by_isbn(pBook, SORT_NAME, ASC));
     //order_by_isbn(pBook);
 
     return 0;
