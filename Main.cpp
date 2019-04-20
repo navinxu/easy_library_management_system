@@ -662,7 +662,7 @@ void truncate_file(const char* filename) {
 
 
 book * generate_book_linked_list() {
-    std::ifstream fin = get_file_read_handler("test.txt");
+    std::ifstream fin = get_file_read_handler("books.txt");
 
     std::string _line;
     char* delim = string_to_char("|||");
@@ -767,108 +767,6 @@ book * generate_book_linked_list() {
     return pHead;
 
 }
-
-//book * generate_book_linked_list() {
-//    std::ifstream fin = get_file_read_handler("books.txt");
-//
-//    std::string _line;
-//    char* delim = string_to_char("|||");
-//    char* tmp = nullptr;
-//    char* line = nullptr;
-//    unsigned short count = 0;
-//    book * pHead = nullptr;
-//    book * pCurrent = nullptr;
-//    book * pLast = nullptr;
-//    while (!fin.eof()) {
-//        getline(fin, _line);
-//        //std::cout << str << endl;
-//        line = string_to_char(_line);
-//        tmp = std::strtok(line, delim);
-//        count = 0;
-//
-//        if (tmp != nullptr)
-//            pCurrent = new book;
-//
-//        while (tmp != nullptr) {
-//            //std::cout << tmp << endl;
-//
-//            switch (++count) {
-//                case 1:
-//                    //cout << "1:" << tmp << endl;
-//                    pCurrent->book_id = std::atoi(tmp);
-//                    break;
-//                case 2:
-//                    //cout << "2:" << tmp << endl;
-//                    pCurrent->isbn = tmp;
-//                    break;
-//                case 3:
-//                    //cout << "3:" <<tmp << endl;
-//                    pCurrent->book_name = tmp;
-//                    break;
-//                case 4:
-//                    pCurrent->author = tmp;
-//                    break;
-//                case 5:
-//                    pCurrent->book_publisher = tmp;
-//                    break;
-//                case 6:
-//                    pCurrent->book_category = tmp;
-//                    break;
-//                case 7:
-//                    pCurrent->price = std::atof(tmp);
-//                    break;
-//                case 8:
-//                    pCurrent->borrow_count = std::atoi(tmp);
-//                    break;
-//                case 9:
-//                    pCurrent->book_amount = std::atoi(tmp);
-//                    break;
-//                case 10:
-//                    pCurrent->book_current_amount = std::atoi(tmp);
-//                    break;
-//                case 11:
-//                    pCurrent->appointment = std::atoi(tmp);
-//                    break;
-//                case 12:
-//                    pCurrent->book_status = (bool)tmp;
-//                    break;
-//                case 13:
-//                    pCurrent->last_borrow_date = tmp;
-//                    break;
-//                case 14:
-//                    pCurrent->last_return_date = tmp;
-//                    break;
-//            }
-//            tmp = std::strtok(nullptr, delim);
-//        }
-//
-//
-//        if (pHead == nullptr) {
-//            pHead = pCurrent;
-//        } else {
-//            pLast->next = pCurrent;
-//        }
-//
-//        pLast = pCurrent;
-//
-//    }
-//
-//    /*
-//       if (fin.eof()) {
-//       cout << "file empty" << endl;
-//       }
-//       */
-//
-//    fin.close();
-//
-//    if (pHead != nullptr) {
-//        pLast->next = nullptr;
-//    }
-//
-//
-//    return pHead;
-//
-//}
 
 /**
  *
