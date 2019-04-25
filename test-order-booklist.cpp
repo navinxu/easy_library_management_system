@@ -48,7 +48,7 @@ enum check_condition {
 /**
  * 排序方式
  */
-enum order_by {
+enum sort_order {
     ASC, // 顺序
     DESC // 倒序
 };
@@ -235,14 +235,19 @@ book * generate_book_linked_list() {
 
 }
 
-void print_book(book * pBookHead) {
-    book * pCurrent = pBookHead;
+void print_book(book *pBookHead) {
+    book *&pCurrent = pBookHead;
+    long long count = 1;
     while (pCurrent != nullptr) {
         //std::cout << pBookHead->book_id << "---" << pBookHead->book_name << std::endl;
-        //std::cout << pBookHead->book_id << "|||" << pBookHead->isbn << "|||" << pBookHead->book_name  << "|||" << pBookHead->author << "|||" << pBookHead->book_publisher << "|||" <<  pBookHead->book_category << "|||" << pBookHead->price << "|||" << pBookHead->borrow_count << "|||" << pBookHead->book_amount << "|||" << pBookHead->book_current_amount << "|||" << pBookHead->appointment << "|||" << pBookHead->book_status << "|||" << pBookHead->last_borrow_date << "|||" << pBookHead->last_return_date << std::endl;
-        std::cout << pCurrent->book_id << "|||" << pCurrent->isbn << "|||" << pCurrent->book_name  << "|||" << pCurrent->author << "|||" << pCurrent->book_publisher << "|||" <<  pCurrent->book_category << "|||" << pCurrent->price << "|||" << pCurrent->borrow_count << "|||" << pCurrent->book_amount << "|||" << pCurrent->book_current_amount << "|||" << pCurrent->appointment << "|||" << pCurrent->book_status << "|||" << pCurrent->last_borrow_date << "|||" << pCurrent->last_return_date << std::endl;
+        //std::cout << count << " : " << pBookHead->book_id << "|||" << pBookHead->isbn << "|||" << pBookHead->book_name  << "|||" << pBookHead->author << "|||" << pBookHead->book_publisher << "|||" <<  pBookHead->book_category << "|||" << pBookHead->price << "|||" << pBookHead->borrow_count << "|||" << pBookHead->book_amount << "|||" << pBookHead->book_current_amount << "|||" << pBookHead->appointment << "|||" << pBookHead->book_status << "|||" << pBookHead->last_borrow_date << "|||" << pBookHead->last_return_date << std::endl;
+        std::cout << count << " : " << pCurrent->book_id << "|||" << pCurrent->isbn << "|||" << pCurrent->book_name  << "|||" << pCurrent->author << "|||" << pCurrent->book_publisher << "|||" <<  pCurrent->book_category << "|||" << pCurrent->price << "|||" << pCurrent->borrow_count << "|||" << pCurrent->book_amount << "|||" << pCurrent->book_current_amount << "|||" << pCurrent->appointment << "|||" << pCurrent->book_status << "|||" << pCurrent->last_borrow_date << "|||" << pCurrent->last_return_date << std::endl;
         //std::cout << pCurrent->book_id << "|||" << pCurrent->isbn << std::endl;
+        //tmp = pBookHead;
+        //delete tmp;
+        //pBookHead = pBookHead->next;
         pCurrent = pCurrent->next;
+        count ++;
     }
     std::cout << "================================" << std::endl;
 }
@@ -338,7 +343,7 @@ short int locale_chinese_string_compare (const std::string& s1, const std::strin
                        pb2, pb2 + s2.size());
 }
 
-book* sort_books(book *pBookHead, sort_condition sort_by, order_by order) {
+void sort_books(book *&pBookHead, sort_condition sort_by, sort_order order_by) {
     
     book *p = nullptr, *q = nullptr, *tmp = nullptr;
     short int compare = 0;
@@ -349,7 +354,7 @@ book* sort_books(book *pBookHead, sort_condition sort_by, order_by order) {
             switch (sort_by) {
                 case SORT_ISBN:
                     compare = tmp->isbn.compare(q->isbn);
-                    switch (order) {
+                    switch (order_by) {
                         case ASC:
                             if (compare > 0)
                                 tmp = q;
@@ -359,27 +364,10 @@ book* sort_books(book *pBookHead, sort_condition sort_by, order_by order) {
                                 tmp = q;
                             break;
                     }
-                    /**
-                     *
-                        unsigned long book_id;
-                        std::string isbn;//图书检索号
-                        unsigned int borrow_count = 0;//图书借阅量,初始化为0
-                        std::string book_publisher; //出版社
-                        std::string book_name;//书名
-                        std::string book_category;//图书种类
-                        double price = 0.0;//图书价格
-                        unsigned int book_amount = 0;//图书总库存存量
-                        unsigned int book_current_amount = 0;//图书现库存量
-                        std::string author;//图书作者
-                        unsigned int appointment = 0;//图书预约量,初始化为0
-                        bool book_status = false;//是否可借,初始为不可以
-                        std::string last_borrow_date = "0000-00-00";//图书最近一次借出时间，默认为0000-00-00；
-                        std::string last_return_date = "0000-00-00";//图书最近一次归还时间，默认为0000-00-00；
-                    */
                     break;
                 case SORT_ID:
                     compare = tmp->book_id > q->book_id;
-                    switch (order) {
+                    switch (order_by) {
                         case ASC:
                             if (compare)
                                 tmp = q;
@@ -394,7 +382,7 @@ book* sort_books(book *pBookHead, sort_condition sort_by, order_by order) {
                     
                     std::locale::global(std::locale("zh_CN.UTF-8"));
                     compare = locale_chinese_string_compare(tmp->book_name, q->book_name);
-                    switch (order) {
+                    switch (order_by) {
                         case ASC:
                             if (compare > 0)
                                 tmp = q;
@@ -409,7 +397,7 @@ book* sort_books(book *pBookHead, sort_condition sort_by, order_by order) {
                     
                     std::locale::global(std::locale("zh_CN.UTF-8"));
                     compare = locale_chinese_string_compare(tmp->author, q->author);
-                    switch (order) {
+                    switch (order_by) {
                         case ASC:
                             if (compare > 0)
                                 tmp = q;
@@ -424,7 +412,7 @@ book* sort_books(book *pBookHead, sort_condition sort_by, order_by order) {
                     
                     std::locale::global(std::locale("zh_CN.UTF-8"));
                     compare = locale_chinese_string_compare(tmp->book_publisher, q->book_publisher);
-                    switch (order) {
+                    switch (order_by) {
                         case ASC:
                             if (compare > 0)
                                 tmp = q;
@@ -439,7 +427,7 @@ book* sort_books(book *pBookHead, sort_condition sort_by, order_by order) {
                     
                     std::locale::global(std::locale("zh_CN.UTF-8"));
                     compare = locale_chinese_string_compare(tmp->book_category, q->book_category);
-                    switch (order) {
+                    switch (order_by) {
                         case ASC:
                             if (compare > 0)
                                 tmp = q;
@@ -452,7 +440,7 @@ book* sort_books(book *pBookHead, sort_condition sort_by, order_by order) {
                     break;
                 case SORT_PRICE:
                     compare = tmp->price > q->price;
-                    switch (order) {
+                    switch (order_by) {
                         case ASC:
                             if (compare)
                                 tmp = q;
@@ -465,7 +453,7 @@ book* sort_books(book *pBookHead, sort_condition sort_by, order_by order) {
                     break;
                 case SORT_AMOUNT:
                     compare = tmp->book_amount > q->book_amount;
-                    switch (order) {
+                    switch (order_by) {
                         case ASC:
                             if (compare)
                                 tmp = q;
@@ -478,7 +466,7 @@ book* sort_books(book *pBookHead, sort_condition sort_by, order_by order) {
                     break;
                 case SORT_CURRENT_AMOUNT:
                     compare = tmp->book_current_amount > q->book_current_amount;
-                    switch (order) {
+                    switch (order_by) {
                         case ASC:
                             if (compare)
                                 tmp = q;
@@ -491,7 +479,7 @@ book* sort_books(book *pBookHead, sort_condition sort_by, order_by order) {
                     break;
                 case SORT_APPOINTMENT:
                     compare = tmp->appointment > q->appointment;
-                    switch (order) {
+                    switch (order_by) {
                         case ASC:
                             if (compare)
                                 tmp = q;
@@ -504,7 +492,7 @@ book* sort_books(book *pBookHead, sort_condition sort_by, order_by order) {
                     break;
                 case SORT_STATUS:
                     compare = tmp->book_status > q->book_status;
-                    switch (order) {
+                    switch (order_by) {
                         case ASC:
                             if (compare)
                                 tmp = q;
@@ -519,7 +507,7 @@ book* sort_books(book *pBookHead, sort_condition sort_by, order_by order) {
                     
                     std::locale::global(std::locale("zh_CN.UTF-8"));
                     compare = locale_chinese_string_compare(tmp->last_borrow_date, q->last_borrow_date);
-                    switch (order) {
+                    switch (order_by) {
                         case ASC:
                             if (compare > 0)
                                 tmp = q;
@@ -534,7 +522,7 @@ book* sort_books(book *pBookHead, sort_condition sort_by, order_by order) {
                     
                     std::locale::global(std::locale("zh_CN.UTF-8"));
                     compare = locale_chinese_string_compare(tmp->last_return_date, q->last_return_date);
-                    switch (order) {
+                    switch (order_by) {
                         case ASC:
                             if (compare > 0)
                                 tmp = q;
@@ -556,8 +544,6 @@ book* sort_books(book *pBookHead, sort_condition sort_by, order_by order) {
 
         }
     }
-    
-    return pBookHead;
 }
 
 /**
@@ -569,7 +555,8 @@ int main() {
 
     book * pBook = generate_book_linked_list();
     print_book(pBook);
-    print_book(sort_books(pBook, SORT_APPOINTMENT, DESC));
+    sort_books(pBook, SORT_NAME, DESC);
+    print_book(pBook);
     //sort_books(pBook);
 
     return 0;
