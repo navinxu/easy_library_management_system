@@ -1000,9 +1000,9 @@ int search_books(book * pBookHead, check_condition condition = ALL, std::string 
         // 找到
         return 2;
     }
-
-
 }
+
+
 
 /*
  *
