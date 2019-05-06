@@ -326,6 +326,8 @@ int display_home() {
         return 101;
     }
 
+    return 0;
+
 }
 
 int display_admin_home() {
@@ -358,6 +360,7 @@ int display_logon_reader() {
     std::cout << "+                                    欢迎进入读者首页                                      +" << std::endl;
     std::cout << "+                                    +++++++++++++++                                       +" << std::endl;
     std::cout << "+                                                                                          +" << std::endl;
+    return 1;
 }
 
 int add_book() {
@@ -536,6 +539,7 @@ int add_book() {
         }
         switchy_new = true;
     }
+    return 0;
 }
 
 char ensure_book_info(book * pBookHead) {
@@ -608,6 +612,8 @@ int get_max_book_id(book * pHead) {
             return pTmp->book_id;
         }
     }
+     
+    return 0;
 }
 
 /*
