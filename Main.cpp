@@ -1236,9 +1236,10 @@ short int locale_chinese_string_compare (const std::string& s1, const std::strin
  * 对图书信息进行排序
  */
 void sort_books(book *&pBookHead, sort_condition sort_by, sort_order order_by) {
-
+    
     book *p = nullptr, *q = nullptr, *tmp = nullptr;
     short int compare = 0;
+    std::locale::global(std::locale("zh_CN.UTF-8"));
     // 应用选择法对数据进行排序
     for (p = pBookHead; p != nullptr; p = p->next) {
         tmp = p;
@@ -1271,8 +1272,7 @@ void sort_books(book *&pBookHead, sort_condition sort_by, sort_order order_by) {
                     }
                     break;
                 case SORT_NAME:
-
-                    std::locale::global(std::locale("zh_CN.UTF-8"));
+                    
                     compare = locale_chinese_string_compare(tmp->book_name, q->book_name);
                     switch (order_by) {
                         case ASC:
@@ -1286,8 +1286,8 @@ void sort_books(book *&pBookHead, sort_condition sort_by, sort_order order_by) {
                     }
                     break;
                 case SORT_AUTHOR:
-
-                    std::locale::global(std::locale("zh_CN.UTF-8"));
+                    
+                    //std::locale::global(std::locale("zh_CN.UTF-8"));
                     compare = locale_chinese_string_compare(tmp->author, q->author);
                     switch (order_by) {
                         case ASC:
@@ -1301,8 +1301,8 @@ void sort_books(book *&pBookHead, sort_condition sort_by, sort_order order_by) {
                     }
                     break;
                 case SORT_PUBLISHER:
-
-                    std::locale::global(std::locale("zh_CN.UTF-8"));
+                    
+                    //std::locale::global(std::locale("zh_CN.UTF-8"));
                     compare = locale_chinese_string_compare(tmp->book_publisher, q->book_publisher);
                     switch (order_by) {
                         case ASC:
@@ -1316,8 +1316,8 @@ void sort_books(book *&pBookHead, sort_condition sort_by, sort_order order_by) {
                     }
                     break;
                 case SORT_CATEGORY:
-
-                    std::locale::global(std::locale("zh_CN.UTF-8"));
+                    
+                    //std::locale::global(std::locale("zh_CN.UTF-8"));
                     compare = locale_chinese_string_compare(tmp->book_category, q->book_category);
                     switch (order_by) {
                         case ASC:
@@ -1396,8 +1396,8 @@ void sort_books(book *&pBookHead, sort_condition sort_by, sort_order order_by) {
                     }
                     break;
                 case SORT_LAST_BORROW_DATE:
-
-                    std::locale::global(std::locale("zh_CN.UTF-8"));
+                    
+                    //std::locale::global(std::locale("zh_CN.UTF-8"));
                     compare = locale_chinese_string_compare(tmp->last_borrow_date, q->last_borrow_date);
                     switch (order_by) {
                         case ASC:
@@ -1411,8 +1411,8 @@ void sort_books(book *&pBookHead, sort_condition sort_by, sort_order order_by) {
                     }
                     break;
                 case SORT_LAST_RETURN_DATE:
-
-                    std::locale::global(std::locale("zh_CN.UTF-8"));
+                    
+                    //std::locale::global(std::locale("zh_CN.UTF-8"));
                     compare = locale_chinese_string_compare(tmp->last_return_date, q->last_return_date);
                     switch (order_by) {
                         case ASC:
