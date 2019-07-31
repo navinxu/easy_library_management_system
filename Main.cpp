@@ -133,7 +133,7 @@ void convertFromString(T &value, const std::string &s);
 void display_search_book();
 int display_search_book_select();
 int search_books(book * pBookHead, check_condition condition, std::string keyword);
-void search_book_work(check_condition condition, bool &switchy_search_book_home, bool &search_book);
+void search_book_work(check_condition condition, bool &switch_search_book_home, bool &search_book);
 void delete_book_by_id(unsigned int book_id);
 void do_delete_book_by_id(book * &pBookHead, unsigned int book_id);
 std::string strip_space_begin_end(std::string input_str);
@@ -145,108 +145,108 @@ void sort_books(book *&pBookHead, sort_condition sort_by, sort_order order_by);
 int main() {
 
     // 管理首页开关
-    bool switchy_admin_home = true;
+    bool switch_admin_home = true;
     // 图书按条件搜索内循环开关
-    bool switchy_search_book = true;
+    bool switch_search_book = true;
     // 搜索图书入口开关
-    bool switchy_search_book_home = true;
+    bool switch_search_book_home = true;
     std::string keyword = "";
 
     switch (display_home()) {
         case 100:
             // enter management system
             //std::cout << "管理员登录成功" << std::endl;
-            while (switchy_admin_home) {
-                switchy_admin_home = false;
+            while (switch_admin_home) {
+                switch_admin_home = false;
                 switch (display_admin_home()) {
                     case 2:
                         // 增加图书
                         switch (add_book()) {
                             case -1:
-                                switchy_admin_home = true;
+                                switch_admin_home = true;
                                 break;
                             case 0:
                                 return 0;
                             default:
-                                switchy_admin_home = true;
+                                switch_admin_home = true;
                                 break;
                         }
                         break;
                     case 3:
                         // 查询图书
                         display_search_book();
-                        switchy_search_book_home = true;
-                        while (switchy_search_book_home) {
-                            switchy_search_book_home = false;
+                        switch_search_book_home = true;
+                        while (switch_search_book_home) {
+                            switch_search_book_home = false;
                             switch (display_search_book_select()) {
                                 case 200:
                                     // 所有图书
                                     std::getchar();
-                                    search_book_work(ALL, switchy_search_book_home, switchy_search_book);
-                                    switchy_search_book_home = true;
+                                    search_book_work(ALL, switch_search_book_home, switch_search_book);
+                                    switch_search_book_home = true;
                                     break;
                                 case 201:
                                     // 按 ISBN
                                     std::getchar();
-                                    switchy_search_book = true;
-                                    while (switchy_search_book) {
-                                        switchy_search_book = false;
+                                    switch_search_book = true;
+                                    while (switch_search_book) {
+                                        switch_search_book = false;
                                         std::cout << "请输入要查询的ISBN(输入-1重新选择):";
                                         //std::cin >> keyword;
-                                        search_book_work(ISBN, switchy_search_book_home, switchy_search_book);
+                                        search_book_work(ISBN, switch_search_book_home, switch_search_book);
                                     }
                                     break;
                                 case 202:
                                     // 按图书名
                                     std::getchar();
-                                    switchy_search_book = true;
-                                    while (switchy_search_book) {
-                                        switchy_search_book = false;
+                                    switch_search_book = true;
+                                    while (switch_search_book) {
+                                        switch_search_book = false;
                                         std::cout << "请输入要查询的图书名(输入-1重新选择):";
                                         //std::cin >> keyword;
-                                        search_book_work(NAME, switchy_search_book_home, switchy_search_book);
+                                        search_book_work(NAME, switch_search_book_home, switch_search_book);
                                     }
                                     break;
                                 case 203:
                                     // 按作者
                                     std::getchar();
-                                    switchy_search_book = true;
-                                    while (switchy_search_book) {
-                                        switchy_search_book = false;
+                                    switch_search_book = true;
+                                    while (switch_search_book) {
+                                        switch_search_book = false;
                                         std::cout << "请输入要查询的作者名(多个作者用 / 分割，输入-1重新选择):";
                                         //std::cin >> keyword;
-                                        search_book_work(AUTHOR, switchy_search_book_home, switchy_search_book);
+                                        search_book_work(AUTHOR, switch_search_book_home, switch_search_book);
                                     }
                                     break;
                                 case 204:
                                     // 按出版社
                                     std::getchar();
-                                    switchy_search_book = true;
-                                    while (switchy_search_book) {
-                                        switchy_search_book = false;
+                                    switch_search_book = true;
+                                    while (switch_search_book) {
+                                        switch_search_book = false;
                                         std::cout << "请输入要查询的出版社(输入-1重新选择):";
                                         //std::cin >> keyword;
-                                        search_book_work(PUBLISHER, switchy_search_book_home, switchy_search_book);
+                                        search_book_work(PUBLISHER, switch_search_book_home, switch_search_book);
                                     }
                                     break;
                                 case 205:
                                     // 按图书种类
                                     std::getchar();
-                                    switchy_search_book = true;
-                                    while (switchy_search_book) {
-                                        switchy_search_book = false;
+                                    switch_search_book = true;
+                                    while (switch_search_book) {
+                                        switch_search_book = false;
                                         std::cout << "请输入要查询的图书类别(输入-1重新选择):";
                                         //std::cin >> keyword;
-                                        search_book_work(CATEGORY, switchy_search_book_home, switchy_search_book);
+                                        search_book_work(CATEGORY, switch_search_book_home, switch_search_book);
                                     }
                                     break;
                                 case 0:
                                     return 0;
                                 case 1:
-                                    switchy_admin_home = true;
+                                    switch_admin_home = true;
                                     break;
                                 default:
-                                    switchy_search_book_home = true;
+                                    switch_search_book_home = true;
                             }
 
                         }
@@ -272,7 +272,7 @@ int main() {
                     case 0:
                         return 0;
                     default:
-                        switchy_admin_home = true;
+                        switch_admin_home = true;
                 }
             }
             break;
@@ -371,19 +371,19 @@ int add_book() {
     std::cout << "+                                                                                          +" << std::endl;
     std::cout << "+                                                                                          +" << std::endl;
 
-    bool switchy_new = true;
-    bool switchy_add = true;
+    bool switch_new = true;
+    bool switch_add = true;
     bool is_break = false;
-    while (switchy_new) {
+    while (switch_new) {
 
-        switchy_new = false;
+        switch_new = false;
 
         book * new_book = new book;
 
         std::getchar();
-        switchy_add = true;
-        while (switchy_add) {
-            switchy_add = false;
+        switch_add = true;
+        while (switch_add) {
+            switch_add = false;
 
             std::cout << "ISBN(0:退出程序，-1:返回管理首页, Ctrl c 结束程序)：";
             //std::cin >> new_book->isbn;
@@ -399,9 +399,9 @@ int add_book() {
 
             if (book_exists(new_book->isbn)) {
                 // 存在
-                bool switchy_is_update = true;
-                while (switchy_is_update) {
-                    switchy_is_update = false;
+                bool switch_is_update = true;
+                while (switch_is_update) {
+                    switch_is_update = false;
                     std::cout << "该图书已经存在，是否继续保存(库存增加1)(Y/N)：";
                     std::cin >> select_char;
                     switch (std::toupper(select_char)) {
@@ -414,12 +414,12 @@ int add_book() {
                         default:
                             std::cout << "您在说什么？我听不明白！" << std::endl;
                             std::cout << "请重新输入！" << std::endl;
-                            switchy_is_update = true;
+                            switch_is_update = true;
                     }
                     std::cout << "=======================" << std::endl;
 
                 }
-                switchy_new = true;
+                switch_new = true;
                 // 用于退出外部循环
                 is_break = true;
                 break;
@@ -432,7 +432,7 @@ int add_book() {
             // 若没有输入任何东西，则重新输入
             if (!new_book->isbn.compare("")){
                 is_break = false;
-                switchy_add = true;
+                switch_add = true;
                 continue;
             }
         }
@@ -440,9 +440,9 @@ int add_book() {
         if (is_break)
             continue;
 
-        switchy_add = true;
-        while (switchy_add) {
-            switchy_add = false;
+        switch_add = true;
+        while (switch_add) {
+            switch_add = false;
 
             std::cout << "图书名：";
             //std::cin >>  new_book->book_name;
@@ -452,13 +452,13 @@ int add_book() {
             new_book->book_name = strip_space_begin_end(new_book->book_name);
 
             if (!new_book->book_name.compare("")){
-                switchy_add = true;
+                switch_add = true;
             }
         }
 
-        switchy_add = true;
-        while (switchy_add) {
-            switchy_add = false;
+        switch_add = true;
+        while (switch_add) {
+            switch_add = false;
 
             std::cout << "作者：";
             std::getline(std::cin, new_book->author);
@@ -466,13 +466,13 @@ int add_book() {
             new_book->author = strip_space_begin_end(new_book->author);
 
             if (!new_book->author.compare("")) {
-                switchy_add = true;
+                switch_add = true;
             }
         }
 
-        switchy_add = true;
-        while (switchy_add) {
-            switchy_add = false;
+        switch_add = true;
+        while (switch_add) {
+            switch_add = false;
             std::cout << "图书类别：";
             //std::cin >> new_book->book_category;
             std::getline(std::cin, new_book->book_category);
@@ -480,26 +480,26 @@ int add_book() {
             new_book->book_category = strip_space_begin_end(new_book->book_category);
 
             if (!new_book->book_category.compare(""))
-                switchy_add = true;
+                switch_add = true;
 
         }
 
-        switchy_add = true;
-        while (switchy_add) {
-            switchy_add = false;
+        switch_add = true;
+        while (switch_add) {
+            switch_add = false;
             std::cout << "出版社：";
             //std::cin >> new_book->book_publisher;
             std::getline(std::cin, new_book->book_publisher);
 
             new_book->book_publisher = strip_space_begin_end(new_book->book_publisher);
             if (!new_book->book_publisher.compare(""))
-                switchy_add = true;
+                switch_add = true;
         }
 
-        switchy_add = true;
+        switch_add = true;
         std::string price;
-        while (switchy_add) {
-            switchy_add = false;
+        while (switch_add) {
+            switch_add = false;
             //std::cout << "图书价格请务必输入数字，否则将可能出现无法意料的故障！" << std::endl;
             std::cout << "图书价格：";
             std::getline(std::cin, price);
@@ -507,7 +507,7 @@ int add_book() {
             price = strip_space_begin_end(price);
 
             if (!price.compare(""))
-                switchy_add = true;
+                switch_add = true;
         }
 
         convertFromString(new_book->price, price);
@@ -515,10 +515,10 @@ int add_book() {
 
         std::cout << "=======================" << std::endl;
 
-        bool switchy_is_to_save = true;
+        bool switch_is_to_save = true;
 
-        while (switchy_is_to_save) {
-            switchy_is_to_save = false;
+        while (switch_is_to_save) {
+            switch_is_to_save = false;
             switch (std::toupper(ensure_book_info(new_book))) {
                 case 'Y':
                     std::cout << "=======================" << std::endl;
@@ -529,7 +529,7 @@ int add_book() {
                 case 'N':
                     break;
                 default:
-                    switchy_is_to_save = true;
+                    switch_is_to_save = true;
                     std::cout << "您在说什么？我听不明白！" << std::endl;
                     std::cout << "请重新输入！" << std::endl;
                     break;
@@ -537,7 +537,7 @@ int add_book() {
 
             std::cout << "==============================" << std::endl;
         }
-        switchy_new = true;
+        switch_new = true;
     }
     return 0;
 }
@@ -1017,14 +1017,14 @@ int search_books(book * pBookHead, check_condition condition = ALL, std::string 
  * \param bool 进入图书搜索首页
  * \param bool 进入图书搜索条件循环
  */
-void search_book_work(check_condition condition, bool &switchy_search_book_home, bool &search_book) {
+void search_book_work(check_condition condition, bool &switch_search_book_home, bool &search_book) {
     std::string keyword = "";
 
     if (condition != ALL)
         std::getline(std::cin, keyword);
 
     if (!keyword.compare("-1")) {
-        switchy_search_book_home = true;
+        switch_search_book_home = true;
         return;
     }
 
