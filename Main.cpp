@@ -38,7 +38,7 @@
 #include <string> // string
 #include <fstream> // ifstream,ofstream
 #include <cstring> // strtok,strcpy
-#include <sstream> // stri ngstream
+#include <sstream> // stringstream
 #include <iomanip>
 #include <fnmatch.h> // fnmatch
 #include <cctype> // isspace
@@ -61,9 +61,9 @@ struct reader
 
 struct book
 {
-    unsigned long book_id;
+    unsigned long long book_id;
     std::string isbn;//图书检索号
-    unsigned int borrow_count = 0;//图书借阅量,初始化为0
+    unsigned long long borrow_count = 0;//图书借阅量,初始化为0
     std::string book_publisher; //出版社
     std::string book_name;//书名
     std::string book_category;//图书种类
@@ -71,8 +71,8 @@ struct book
     unsigned int book_amount = 0;//图书总库存存量
     unsigned int book_current_amount = 0;//图书现库存量
     std::string author;//图书作者
-    unsigned int appointment = 0;//图书预约量,初始化为0
-    bool book_status = false;//是否可借,初始为不可以
+    unsigned long long appointment = 0;//图书预约量,初始化为0
+    short int book_status = 0;//是否可借,初始为不可以
     std::string last_borrow_date = "0000-00-00";//图书最近一次借出时间，默认为0000-00-00；
     std::string last_return_date = "0000-00-00";//图书最近一次归还时间，默认为0000-00-00；
     book * next = nullptr;
@@ -90,6 +90,10 @@ enum check_condition {
     CATEGORY
 };
 
+/**
+ *
+ * 排序条件
+ */
 enum sort_condition {
     SORT_ID,
     SORT_ISBN,
@@ -106,6 +110,10 @@ enum sort_condition {
     SORT_LAST_RETURN_DATE
 };
 
+/**
+ *
+ * 排序方法
+ */
 enum sort_order {
     ASC,
     DESC
@@ -134,12 +142,13 @@ void display_search_book();
 int display_search_book_select();
 int search_book_work(book * pBookHead, check_condition condition, std::string keyword);
 void search_book(check_condition condition, bool &switch_search_book_home, bool &search_book);
-void delete_book_by_id(unsigned int book_id);
-void do_delete_book_by_id(book * &pBookHead, unsigned int book_id);
+void delete_book_by_id(unsigned long long book_id);
+void do_delete_book_by_id(book * &pBookHead, unsigned long long book_id);
 std::string strip_space_begin_end(std::string input_str);
 void exchange_data_for_book(book *&p, book *&q);
 short int locale_chinese_string_compare (const std::string& s1, const std::string& s2);
 void sort_books(book *&pBookHead, sort_condition sort_by, sort_order order_by);
+std::string cstr_to_string(const char* cstr);
 
 
 int main() {
@@ -587,7 +596,7 @@ void combine_book_data(book * &pBookHead) {
     pBookHead->book_id = get_max_book_id(pHead) + 1;
     pBookHead->book_amount++;
     pBookHead->book_current_amount++;
-    pBookHead->book_status = true;
+    pBookHead->book_status = 1;
 }
 
 /**
@@ -697,7 +706,7 @@ book * generate_book_linked_list() {
             switch (++count) {
                 case 1:
                     //cout << "1:" << tmp << endl;
-                    pCurrent->book_id = std::atoi(tmp);
+                    pCurrent->book_id = std::stoull(cstr_to_string(tmp));
                     break;
                 case 2:
                     //cout << "2:" << tmp << endl;
@@ -720,7 +729,7 @@ book * generate_book_linked_list() {
                     pCurrent->price = std::atof(tmp);
                     break;
                 case 8:
-                    pCurrent->borrow_count = std::atoi(tmp);
+                    pCurrent->borrow_count = std::stoull(cstr_to_string(tmp));
                     break;
                 case 9:
                     pCurrent->book_amount = std::atoi(tmp);
@@ -729,14 +738,17 @@ book * generate_book_linked_list() {
                     pCurrent->book_current_amount = std::atoi(tmp);
                     break;
                 case 11:
-                    pCurrent->appointment = std::atoi(tmp);
+                    pCurrent->appointment = std::stoull(cstr_to_string(tmp));
                     break;
                 case 12:
                     //pCurrent->book_status = (bool)tmp;
+                    /*
                     if (!std::strcmp(tmp, "0"))
-                        pCurrent->book_status = false;
+                        pCurrent->book_status = 0;
                     else
-                        pCurrent->book_status = true;
+                        pCurrent->book_status = 1;
+                    */
+                    pCurrent->book_status = std::atoi(tmp);
 
                     break;
                 case 13:
@@ -1068,12 +1080,12 @@ void search_book(check_condition condition, bool &switch_search_book_home, bool 
 }
 
 
-void delete_book_by_id(unsigned int book_id) {
+void delete_book_by_id(unsigned long long book_id) {
     book * pHead = generate_book_linked_list();
     do_delete_book_by_id(pHead, book_id);
 }
 
-void do_delete_book_by_id(book * &pBookHead, unsigned int id) {
+void do_delete_book_by_id(book * &pBookHead, unsigned long long id) {
     book * pCurrent = nullptr;
     book * pLast = nullptr;
     book * pNext = nullptr;
@@ -1149,7 +1161,7 @@ void exchange_data_for_book(book *&p, book *&q) {
 
     std::string tmp_str = "";
     unsigned int tmp_int = 0;
-    unsigned long tmp_long = 0;
+    unsigned long long tmp_long = 0;
     double tmp_double = 0;
     bool tmp_bool = true;
 
@@ -1161,7 +1173,7 @@ void exchange_data_for_book(book *&p, book *&q) {
     p->isbn = q->isbn;
     q->isbn = tmp_str;
 
-    tmp_int = p->borrow_count;
+    tmp_long = p->borrow_count;
     p->borrow_count = q->borrow_count;
     q->borrow_count = tmp_int;
 
@@ -1193,7 +1205,7 @@ void exchange_data_for_book(book *&p, book *&q) {
     p->author = q->author;
     q->author = tmp_str;
 
-    tmp_int = p->appointment;
+    tmp_long = p->appointment;
     p->appointment = q->appointment;
     q->appointment = tmp_int;
 
@@ -1467,6 +1479,18 @@ std::string strip_space_begin_end(const std::string input_str) {
         output_str += input_str[index];
 
     return output_str;
+}
+
+/**
+ *
+ *  char 字符串转换成 string
+ */
+std::string cstr_to_string(const char* cstr) {
+    std::string s;
+    std::stringstream ss;
+    ss << cstr;
+    ss >> s;
+    return s;
 }
 
 /**
