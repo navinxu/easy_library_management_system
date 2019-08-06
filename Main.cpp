@@ -149,6 +149,7 @@ void exchange_data_for_book(book *&p, book *&q);
 short int locale_chinese_string_compare (const std::string& s1, const std::string& s2);
 void sort_books(book *&pBookHead, sort_condition sort_by, sort_order order_by);
 std::string cstr_to_string(const char* cstr);
+unsigned int cstr_to_unsigned_int(const char* cstr);
 
 
 int main() {
@@ -707,6 +708,8 @@ book * generate_book_linked_list() {
                 case 1:
                     //cout << "1:" << tmp << endl;
                     pCurrent->book_id = std::stoull(cstr_to_string(tmp));
+                    // 不知道为何这也行
+                    //pCurrent->book_id = std::stoull(tmp);
                     break;
                 case 2:
                     //cout << "2:" << tmp << endl;
@@ -732,10 +735,10 @@ book * generate_book_linked_list() {
                     pCurrent->borrow_count = std::stoull(cstr_to_string(tmp));
                     break;
                 case 9:
-                    pCurrent->book_amount = std::atoi(tmp);
+                    pCurrent->book_amount = cstr_to_unsigned_int(tmp);
                     break;
                 case 10:
-                    pCurrent->book_current_amount = std::atoi(tmp);
+                    pCurrent->book_current_amount = cstr_to_unsigned_int(tmp);
                     break;
                 case 11:
                     pCurrent->appointment = std::stoull(cstr_to_string(tmp));
@@ -748,7 +751,7 @@ book * generate_book_linked_list() {
                     else
                         pCurrent->book_status = 1;
                     */
-                    pCurrent->book_status = std::atoi(tmp);
+                    pCurrent->book_status = cstr_to_unsigned_int(tmp);
 
                     break;
                 case 13:
@@ -1491,6 +1494,18 @@ std::string cstr_to_string(const char* cstr) {
     ss << cstr;
     ss >> s;
     return s;
+}
+
+/**
+ *
+ * 将 char 类型字符串转换成 unsigned int 类型
+ */
+unsigned int cstr_to_unsigned_int(const char* cstr) {
+    std::stringstream ss;
+    unsigned int value;
+    ss << cstr;
+    ss >> value;
+    return value;
 }
 
 /**
