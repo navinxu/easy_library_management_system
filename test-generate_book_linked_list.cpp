@@ -11,6 +11,7 @@
 #include <fstream> // ifstream
 #include <cstring> // strtok(), strcmp()
 #include <sstream> // stringstream
+#include <string> // stoull()
 
 struct book
 {
@@ -57,6 +58,18 @@ std::string cstr_to_string(const char* cstr) {
 
 /**
  *
+ * 将 char 类型字符串转换成 unsigned int 类型
+ */
+unsigned int cstr_to_unsigned_int(const char* cstr) {
+    std::stringstream ss;
+    unsigned int value;
+    ss << cstr;
+    ss >> value;
+    return value;
+}
+
+/**
+ *
  * string 类型转char *  类型
  */
 char * string_to_char(std::string str) {
@@ -85,7 +98,7 @@ std::ifstream get_file_read_handler(const char* filename, const char mode = 'D')
     return fin;
 }
 
-book * generate_book_linked_list() {
+book * generate_book_linked_list(check_condition condition, std::string keyword, unsigned long long page, unsigned int limit) {
     std::ifstream fin = get_file_read_handler("books.txt");
 
     std::string _line;
@@ -113,6 +126,8 @@ book * generate_book_linked_list() {
                 case 1:
                     //cout << "1:" << tmp << endl;
                     pCurrent->book_id = std::stoull(cstr_to_string(tmp));
+                    // 不知道为何这也行
+                    //pCurrent->book_id = std::stoull(tmp);
                     break;
                 case 2:
                     //cout << "2:" << tmp << endl;
@@ -138,10 +153,10 @@ book * generate_book_linked_list() {
                     pCurrent->borrow_count = std::stoull(cstr_to_string(tmp));
                     break;
                 case 9:
-                    pCurrent->book_amount = std::atoi(tmp);
+                    pCurrent->book_amount = cstr_to_unsigned_int(tmp);
                     break;
                 case 10:
-                    pCurrent->book_current_amount = std::atoi(tmp);
+                    pCurrent->book_current_amount = cstr_to_unsigned_int(tmp);
                     break;
                 case 11:
                     pCurrent->appointment = std::stoull(cstr_to_string(tmp));
@@ -154,7 +169,7 @@ book * generate_book_linked_list() {
                     else
                         pCurrent->book_status = 1;
                     */
-                    pCurrent->book_status = std::atoi(tmp);
+                    pCurrent->book_status = cstr_to_unsigned_int(tmp);
 
                     break;
                 case 13:
@@ -192,6 +207,7 @@ book * generate_book_linked_list() {
 
 
     return pHead;
+
 
 }
 
