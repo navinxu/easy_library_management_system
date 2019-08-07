@@ -13,6 +13,17 @@
 #include <sstream> // stringstream
 #include <string> // stoull()
 
+/**
+ *
+ * ADD
+ * 分页时每页显示的最多条目
+ */
+enum limit_num {
+    FiVE, // 5
+    TEN, // 10
+    TWENTY // 20
+};
+
 struct book
 {
     unsigned long long book_id;
@@ -98,7 +109,7 @@ std::ifstream get_file_read_handler(const char* filename, const char mode = 'D')
     return fin;
 }
 
-book * generate_book_linked_list(check_condition condition, std::string keyword, unsigned long long page, unsigned int limit) {
+book * generate_book_linked_list(check_condition condition, std::string keyword, unsigned long long page, limit_num limit) {
     std::ifstream fin = get_file_read_handler("books.txt");
 
     std::string _line;
