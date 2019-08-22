@@ -87,6 +87,8 @@ std::ifstream get_file_read_handler(const char* filename, const char mode = 'D')
 }
 
 /**
+ * string 字符串分隔函数
+ *
  * 这里有个要注意的地方是，如果想得到分隔符后面的最后一个字符串，
  * 那么就必须在整个字符串的末尾加上同样的分隔符
  * 要用到 <vector> 和 <string> 头文件
@@ -125,6 +127,33 @@ book* generate_book_linked_list(check_condition condition, std::string keyword, 
 
         temp = split(line, "|||");
 
+        /*
+    enum check_condition {
+        ALL,
+        ISBN,
+        NAME,
+        AUTHOR,
+        PUBLISHER,
+        CATEGORY
+    };
+    */
+        switch ( condition ) {
+            case ISBN:
+                break;
+            case NAME:
+                break;
+            case AUTHOR:
+                break;
+            case PUBLISHER:
+                break;
+            case CATEGORY:
+                break;
+            case ALL:
+            default:
+                break;
+        }
+
+        /*
         for (decltype(temp.size()) index = 0; index != temp.size(); index ++) {
 
             switch (index) {
@@ -167,15 +196,7 @@ book* generate_book_linked_list(check_condition condition, std::string keyword, 
                     pCurrent->appointment = std::stoull(temp[index]);
                     break;
                 case 11:
-                    //pCurrent->book_status = (bool)temp[index];
-                    /*
-                    if (!std::strcmp(temp[index], "0"))
-                        pCurrent->book_status = 0;
-                    else
-                        pCurrent->book_status = 1;
-                    */
                     pCurrent->book_status = std::stoul(temp[index]);
-
                     break;
                 case 12:
                     pCurrent->last_borrow_date = temp[index];
@@ -185,6 +206,21 @@ book* generate_book_linked_list(check_condition condition, std::string keyword, 
                     break;
             }
         }
+        */
+        pCurrent->book_id = std::stoull(temp[0]);
+        pCurrent->isbn = temp[1];
+        pCurrent->book_name = temp[2];
+        pCurrent->author = temp[3];
+        pCurrent->book_publisher = temp[4];
+        pCurrent->book_category = temp[5];
+        pCurrent->price = std::stod(temp[6]);
+        pCurrent->borrow_count = std::stoull(temp[7]);
+        pCurrent->book_amount = std::stoul(temp[8]);
+        pCurrent->book_current_amount = std::stoul(temp[9]);
+        pCurrent->appointment = std::stoull(temp[10]);
+        pCurrent->book_status = std::stoul(temp[11]);
+        pCurrent->last_borrow_date = temp[12];
+        pCurrent->last_return_date = temp[13];
 
         if (!pHead) {
             pHead = new book();
