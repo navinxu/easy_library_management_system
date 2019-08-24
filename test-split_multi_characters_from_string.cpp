@@ -12,27 +12,25 @@
 #include <vector>
 using namespace std;
 
-/**
- * 这里有个要注意的地方是，如果想得到分隔符后面的最后一个字符串，
- * 那么就必须在整个字符串的末尾加上同样的分隔符
- */
-vector<string> split(const string& input, const string& delimiter) {
+vector<string> split(string& input, const string& delimiter) {
     vector<string> result;
-    std::string::size_type pos = 0, delim_pos = 0;
 
-    // string.find 在找不到时返回 string::npos 值
-    while (delim_pos != input.npos) {
-        // 找到的分隔符的第一个字符位置
-        delim_pos = input.find(delimiter, pos);
-        if (delim_pos != string::npos) {
-            // 此时游标的指向位置
-            result.push_back(input.substr(pos,delim_pos - pos));
-        } else
-            break;
-        pos = delim_pos + delimiter.length();
+    if (input.empty())
+        return result;
 
+    // 在后面加上分隔符以获取最后面的有效字符串
+    input += delimiter;
+    std::string temp;
+    std::string::size_type pos;
+
+    pos = input.find(delimiter, 0);
+
+    while (pos != temp.npos) {
+        temp = input.substr(0, pos);
+        result.push_back(temp);
+        input = input.substr(pos + delimiter.size(), input.size());
+        pos = input.find(delimiter, 0);
     }
-
 
     return result;
 }
@@ -46,7 +44,7 @@ int main() {
     cout << s.npos <<endl;
     cout << string::npos <<endl;
     */
-    string s("Hello, World, ");
+    string s("Hello, World");
     vector<string> vecs = split(s, ", ");
 
     for (auto s : vecs)
