@@ -150,12 +150,16 @@ void strip_spaces(std::string& s) {
     s = temp;
 }
 
-book* generate_book_linked_list(check_condition condition, std::string keyword, unsigned long long page, per_page limit) {
+book* generate_book_linked_list(check_condition condition, unsigned long long page, per_page limit, std::string keyword = "") {
 
     book* pHead = nullptr;
 
-    if (keyword.empty())
-        return  pHead;
+    strip_spaces(keyword);
+
+    if (keyword.empty()) {
+        if (condition != ALL)
+            return  pHead;
+    }
 
     // fnmatch() 函数任意位置匹配
     keyword = "*" + keyword + "*";
@@ -335,8 +339,9 @@ int main() {
     //return 0;
 
     //std::string s("97871154093");
-    std::string keyword("计算机");
-    book* pBook = generate_book_linked_list(GLOBAL, keyword, 1, FIVE);
+    std::string keyword("   计算机 ");
+    //book* pBook = generate_book_linked_list(GLOBAL, 1, FIVE, keyword);
+    book* pBook = generate_book_linked_list(ALL, 1, FIVE);
     if (pBook)
         display_books(pBook);
     else 
