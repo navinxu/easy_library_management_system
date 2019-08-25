@@ -131,9 +131,8 @@ std::vector<std::string> split(std::string& input, const std::string& delimiter)
  */
 void strip_spaces(std::string& s) {
     std::string temp;
-    bool is_space = false, head_space = false;
-    decltype(s.size()) head, tail, space_begin_pos;
-    for (head = 0, space_begin_pos = 0; head < s.size() && isspace(s[head]); head ++)
+    decltype(s.size()) head, tail;
+    for (head = 0; head < s.size() && isspace(s[head]); head ++)
         ;
 
     if (head == s.size())
@@ -341,7 +340,7 @@ int main() {
     //std::string s("97871154093");
     std::string keyword("   计算机 ");
     //book* pBook = generate_book_linked_list(GLOBAL, 1, FIVE, keyword);
-    book* pBook = generate_book_linked_list(ALL, 1, FIVE);
+    book* pBook = generate_book_linked_list(GLOBAL, 1, FIVE, keyword);
     if (pBook)
         display_books(pBook);
     else 
