@@ -25,6 +25,7 @@ enum limit_num {
     TWENTY // 20
 };
 
+// 添加 prev 属性
 struct book
 {
     unsigned long long book_id;
@@ -42,6 +43,7 @@ struct book
     std::string last_borrow_date = "0000-00-00";//图书最近一次借出时间，默认为0000-00-00；
     std::string last_return_date = "0000-00-00";//图书最近一次归还时间，默认为0000-00-00；
     book * next = nullptr;
+    book * prev = nullptr;
 };
 
 /*
@@ -227,6 +229,7 @@ book* generate_book_linked_list(check_condition condition, std::string keyword, 
             pPrev = new book();
         } else {
             pPrev->next = pCurrent;
+            pCurrent->prev = pPrev;
         }
         pPrev = pCurrent;
     }
@@ -239,10 +242,16 @@ book* generate_book_linked_list(check_condition condition, std::string keyword, 
 
 void display_books(book*& pHead) {
     book*& pTmp = pHead;
+    book* prev = nullptr;
     while (pTmp) {
-        std::cout << pTmp->book_id << "|||" << pTmp->isbn << "|||" << pTmp->book_name  << "|||" << pTmp->author << "|||" << pTmp->book_publisher << "|||" <<  pTmp->book_category << "|||" << pTmp->price << "|||" << pTmp->borrow_count << "|||" << pTmp->book_amount << "|||" << pTmp->book_current_amount << "|||" << pTmp->appointment << "|||" << pTmp->book_status << "|||" << pTmp->last_borrow_date << "|||" << pTmp->last_return_date << std::endl;
-        delete pTmp;
+        prev = pTmp;
         pTmp = pTmp->next;
+    }
+
+    while (prev) {
+        std::cout << prev->book_id << "|||" << prev->isbn << "|||" << prev->book_name  << "|||" << prev->author << "|||" << prev->book_publisher << "|||" <<  prev->book_category << "|||" << prev->price << "|||" << prev->borrow_count << "|||" << prev->book_amount << "|||" << prev->book_current_amount << "|||" << prev->appointment << "|||" << prev->book_status << "|||" << prev->last_borrow_date << "|||" << prev->last_return_date << std::endl;
+        delete prev;
+        prev = prev->prev;
     }
 }
 
