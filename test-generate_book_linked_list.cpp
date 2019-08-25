@@ -12,17 +12,22 @@
 #include <cstring> // strtok(), strcmp()
 #include <sstream> // std::stringstream
 #include <string> // stoull()
-#include <vector> // 
+#include <vector> // vector
+#include <fnmatch.h> // fnmatch()
+#include <cctype> // isspace()
 
 /**
  *
  * ADD
  * 分页时每页显示的最多条目
+ *
+ * 重命名为 per_page，原名 limit_num
+ * 添加数字
  */
-enum limit_num {
-    FIVE, // 5
-    TEN, // 10
-    TWENTY // 20
+enum per_page {
+    FIVE = 5, // 5
+    TEN = 10, // 10
+    TWENTY = 20 // 20
 };
 
 // 添加 prev 属性
@@ -48,9 +53,12 @@ struct book
 
 /*
  * 图书检索条件
+ *
+ * 添加 GLOBAL
  */
 enum check_condition {
     ALL,
+    GLOBAL,
     ISBN,
     NAME,
     AUTHOR,
@@ -115,11 +123,47 @@ std::vector<std::string> split(std::string& input, const std::string& delimiter)
     return result;
 }
 
-book* generate_book_linked_list(check_condition condition, std::string keyword, unsigned long long page, limit_num limit) {
+/**
+ *
+ * 添加
+ * 去除字符串两头的空格
+ * 结果有可能是空字符串
+ */
+void strip_spaces(std::string& s) {
+    std::string temp;
+    bool is_space = false, head_space = false;
+    decltype(s.size()) head, tail, space_begin_pos;
+    for (head = 0, space_begin_pos = 0; head < s.size() && isspace(s[head]); head ++)
+        ;
+
+    if (head == s.size())
+        temp = "";
+    else {
+
+        for (tail = s.size() - 1; tail > head && isspace(s[tail]); tail --)
+            ;
+        tail ++;
+
+        for (;head < tail; head ++)
+            temp += s[head];
+    }
+    s = temp;
+}
+
+book* generate_book_linked_list(check_condition condition, std::string keyword, unsigned long long page, per_page limit) {
+
+    book* pHead = nullptr;
+
+    if (keyword.empty())
+        return  pHead;
+
+    // fnmatch() 函数任意位置匹配
+    keyword = "*" + keyword + "*";
+
     std::ifstream fin = get_file_read_handler("books.txt");
 
     std::string line;
-    book *pHead = nullptr, *pCurrent = nullptr, *pPrev = nullptr;
+    book *pCurrent = nullptr, *pPrev = nullptr;
     std::vector<std::string> temp;
     while (std::getline(fin, line)) {
         //std::cout << line << std::endl;
@@ -138,21 +182,47 @@ book* generate_book_linked_list(check_condition condition, std::string keyword, 
         CATEGORY
     };
     */
+        // 假设没匹配到
+        bool flag = false;
         switch ( condition ) {
             case ISBN:
+                // 返回 0 为匹配到
+                if (!fnmatch(keyword.c_str(), temp[1].c_str(), FNM_NOESCAPE | FNM_CASEFOLD))
+                    flag = true;
                 break;
             case NAME:
+                if (!fnmatch(keyword.c_str(), temp[2].c_str(), FNM_NOESCAPE | FNM_CASEFOLD))
+                    flag = true;
                 break;
             case AUTHOR:
+                if (!fnmatch(keyword.c_str(), temp[3].c_str(), FNM_NOESCAPE | FNM_CASEFOLD))
+                    flag = true;
                 break;
             case PUBLISHER:
+                if (!fnmatch(keyword.c_str(), temp[4].c_str(), FNM_NOESCAPE | FNM_CASEFOLD))
+                    flag = true;
                 break;
             case CATEGORY:
+                if (!fnmatch(keyword.c_str(), temp[5].c_str(), FNM_NOESCAPE | FNM_CASEFOLD))
+                    flag = true;
+                break;
+            case GLOBAL:
+                for (unsigned char index = 1; index <= 5; index ++)
+                    // 只要匹配任何一个，就退出这层循环
+                    if (!fnmatch(keyword.c_str(), temp[index].c_str(), FNM_NOESCAPE | FNM_CASEFOLD)) {
+                        flag = true;
+                        break;
+                    }
                 break;
             case ALL:
             default:
+                flag = true;
                 break;
         }
+
+        // 如果没有匹配到，那么不再进行以下操作
+        if (!flag)
+            continue;
 
         /*
         for (decltype(temp.size()) index = 0; index != temp.size(); index ++) {
@@ -161,7 +231,7 @@ book* generate_book_linked_list(check_condition condition, std::string keyword, 
                 case 0:
                     //cout << "1:" << temp[index] << endl;
                     pCurrent->book_id = std::stoull(temp[index]);
-                    // 不知道为何这也行
+    i                // 不知道为何这也行
                     //pCurrent->book_id = std::stoull(temp[index]);
                     break;
                 case 1:
@@ -258,8 +328,19 @@ void display_books(book*& pHead) {
 
 int main() {
 
-    book* pBook = generate_book_linked_list(ISBN, "大型网站", 1, FIVE);
-    display_books(pBook);
+    //std::string s = "   我 是 中国人  ";
+    //std::cout << s << std::endl;
+    //strip_spaces(s);
+    //std::cout << s << std::endl;
+    //return 0;
+
+    //std::string s("97871154093");
+    std::string keyword("计算机");
+    book* pBook = generate_book_linked_list(GLOBAL, keyword, 1, FIVE);
+    if (pBook)
+        display_books(pBook);
+    else 
+        std::cout << "很遗憾！没有找到哦～～" << std::endl;
 
     return 0;
 }
