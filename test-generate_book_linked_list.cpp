@@ -227,60 +227,6 @@ book* generate_book_linked_list(check_condition condition, unsigned long long pa
         if (!flag)
             continue;
 
-        /*
-        for (decltype(temp.size()) index = 0; index != temp.size(); index ++) {
-
-            switch (index) {
-                case 0:
-                    //cout << "1:" << temp[index] << endl;
-                    pCurrent->book_id = std::stoull(temp[index]);
-    i                // 不知道为何这也行
-                    //pCurrent->book_id = std::stoull(temp[index]);
-                    break;
-                case 1:
-                    //cout << "2:" << temp[index] << endl;
-                    pCurrent->isbn = temp[index];
-                    break;
-                case 2:
-                    //cout << "3:" <<temp[index] << endl;
-                    pCurrent->book_name = temp[index];
-                    break;
-                case 3:
-                    pCurrent->author = temp[index];
-                    break;
-                case 4:
-                    pCurrent->book_publisher = temp[index];
-                    break;
-                case 5:
-                    pCurrent->book_category = temp[index];
-                    break;
-                case 6:
-                    pCurrent->price = std::stod(temp[index]);
-                    break;
-                case 7:
-                    pCurrent->borrow_count = std::stoull(temp[index]);
-                    break;
-                case 8:
-                    pCurrent->book_amount = std::stoul(temp[index]);
-                    break;
-                case 9:
-                    pCurrent->book_current_amount = std::stoul(temp[index]);
-                    break;
-                case 10:
-                    pCurrent->appointment = std::stoull(temp[index]);
-                    break;
-                case 11:
-                    pCurrent->book_status = std::stoul(temp[index]);
-                    break;
-                case 12:
-                    pCurrent->last_borrow_date = temp[index];
-                    break;
-                case 13:
-                    pCurrent->last_return_date = temp[index];
-                    break;
-            }
-        }
-        */
         pCurrent->book_id = std::stoull(temp[0]);
         pCurrent->isbn = temp[1];
         pCurrent->book_name = temp[2];
