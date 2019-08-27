@@ -15,6 +15,7 @@
 #include <vector> // vector
 #include <fnmatch.h> // fnmatch()
 #include <cctype> // isspace()
+using namespace std;
 
 /**
  *
@@ -25,6 +26,7 @@
  * 添加数字
  */
 enum per_page {
+    ONE = 1, // 1
     FIVE = 5, // 5
     TEN = 10, // 10
     TWENTY = 20 // 20
@@ -149,7 +151,12 @@ void strip_spaces(std::string& s) {
     s = temp;
 }
 
-book* generate_book_linked_list(check_condition condition, unsigned long long page, per_page limit, std::string keyword = "") {
+/**
+ *
+ * 根据传入的参数筛选出符合的条件的条目
+ * （大修改）
+ */
+book* generate_book_linked_list(check_condition condition = ALL, unsigned long long page = 1, per_page limit = FIVE, std::string keyword = "") {
 
     book* pHead = nullptr;
 
@@ -158,6 +165,21 @@ book* generate_book_linked_list(check_condition condition, unsigned long long pa
     if (keyword.empty()) {
         if (condition != ALL)
             return  pHead;
+    }
+
+    unsigned long long items_per_page = limit;
+    // 从 0 开始
+    unsigned long long this_page_first_item_pos;
+    unsigned long long this_page_last_item_pos;
+    // 从 0 到 this_page_first_item_pos 需要跳过的计数
+    unsigned long long skip_count = 0;
+
+    this_page_first_item_pos = (page - 1) * items_per_page;
+    this_page_last_item_pos = this_page_first_item_pos + items_per_page - 1;
+
+    if (this_page_first_item_pos == 0) {
+        // 防止此时 this_page_last_item_pos 控制的计数少一项
+        this_page_last_item_pos ++;
     }
 
     // fnmatch() 函数任意位置匹配
@@ -227,6 +249,19 @@ book* generate_book_linked_list(check_condition condition, unsigned long long pa
         if (!flag)
             continue;
 
+        if (skip_count < this_page_first_item_pos) {
+            skip_count ++;
+            continue;
+        }
+
+        // 如果前面不加 1，就会导致计数少 1
+        if (this_page_last_item_pos == this_page_first_item_pos)
+            break;
+
+        this_page_last_item_pos --;
+
+        //cout << this_page_last_item_pos << endl;
+
         pCurrent->book_id = std::stoull(temp[0]);
         pCurrent->isbn = temp[1];
         pCurrent->book_name = temp[2];
@@ -284,9 +319,9 @@ int main() {
     //return 0;
 
     //std::string s("97871154093");
-    std::string keyword("   计算机 ");
+    std::string keyword("   ");
     //book* pBook = generate_book_linked_list(GLOBAL, 1, FIVE, keyword);
-    book* pBook = generate_book_linked_list(GLOBAL, 1, FIVE, keyword);
+    book* pBook = generate_book_linked_list(ALL, 1, FIVE, keyword);
     if (pBook)
         display_books(pBook);
     else 
