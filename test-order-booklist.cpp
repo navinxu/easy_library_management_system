@@ -7,7 +7,7 @@
 *   Create Date ：2019年03月31日
 *   Description ：
 ================================================================*/
-#include <iostream> // cout
+#include <iostream> // cout, exit
 #include <fstream> // ifstream
 #include <cstring> // strtok, strcpy
 #include <string> // string 
@@ -75,11 +75,15 @@ enum sort_condition {
 /*
  *
  * 获取文件读取流
+ *
+ * (修改)
  */
 std::ifstream get_file_read_handler(const char* filename, const char mode = 'D') {
 
     std::ifstream fin;
     switch (mode) {
+        case 'E':
+            fin.open(filename, std::ios::ate);
         default:
             // 找不到文件就创建文件
             fin.open(filename, std::ios_base::app);
@@ -87,6 +91,7 @@ std::ifstream get_file_read_handler(const char* filename, const char mode = 'D')
 
     if (!fin) {
         std::cout << "文件打开失败！" << std::endl;
+        std::exit(1);
     }
     return fin;
 }
@@ -243,9 +248,7 @@ void print_book(book *pBookHead) {
         //std::cout << count << " : " << pBookHead->book_id << "|||" << pBookHead->isbn << "|||" << pBookHead->book_name  << "|||" << pBookHead->author << "|||" << pBookHead->book_publisher << "|||" <<  pBookHead->book_category << "|||" << pBookHead->price << "|||" << pBookHead->borrow_count << "|||" << pBookHead->book_amount << "|||" << pBookHead->book_current_amount << "|||" << pBookHead->appointment << "|||" << pBookHead->book_status << "|||" << pBookHead->last_borrow_date << "|||" << pBookHead->last_return_date << std::endl;
         std::cout << count << " : " << pCurrent->book_id << "|||" << pCurrent->isbn << "|||" << pCurrent->book_name  << "|||" << pCurrent->author << "|||" << pCurrent->book_publisher << "|||" <<  pCurrent->book_category << "|||" << pCurrent->price << "|||" << pCurrent->borrow_count << "|||" << pCurrent->book_amount << "|||" << pCurrent->book_current_amount << "|||" << pCurrent->appointment << "|||" << pCurrent->book_status << "|||" << pCurrent->last_borrow_date << "|||" << pCurrent->last_return_date << std::endl;
         //std::cout << pCurrent->book_id << "|||" << pCurrent->isbn << std::endl;
-        //tmp = pBookHead;
-        //delete tmp;
-        //pBookHead = pBookHead->next;
+        //tmp = pBookHead; //delete tmp; //pBookHead = pBookHead->next;
         pCurrent = pCurrent->next;
         count ++;
     }

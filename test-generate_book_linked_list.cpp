@@ -7,7 +7,7 @@
 *   Create Date ：2019年08月07日
 *   Description ：
 ================================================================*/
-#include <iostream> // cout, endl
+#include <iostream> // cout, endl, exit()
 #include <fstream> // ifstream
 #include <cstring> // strtok(), strcmp()
 #include <sstream> // std::stringstream
@@ -15,6 +15,7 @@
 #include <vector> // vector
 #include <fnmatch.h> // fnmatch()
 #include <cctype> // isspace()
+#include <list> // list
 using namespace std;
 
 /**
@@ -30,6 +31,15 @@ enum per_page {
     FIVE = 5, // 5
     TEN = 10, // 10
     TWENTY = 20 // 20
+};
+
+/**
+ *
+ * 排序方法
+ */
+enum sort_order {
+    ASC,
+    DESC
 };
 
 // 添加 prev 属性
@@ -82,11 +92,17 @@ char * string_to_char(std::string str) {
 /*
  *
  * 获取文件读取流
+ *
+ * (修改)
  */
 std::ifstream get_file_read_handler(const char* filename, const char mode = 'D') {
 
     std::ifstream fin;
     switch (mode) {
+        case 'E':
+            // 从文件未尾到文件头
+            fin.open(filename, std::ios_base::ate);
+            break;
         default:
             // 找不到文件就创建文件
             fin.open(filename, std::ios_base::app);
@@ -94,8 +110,25 @@ std::ifstream get_file_read_handler(const char* filename, const char mode = 'D')
 
     if (!fin) {
         std::cout << "文件打开失败！" << std::endl;
+        std::exit(1);
     }
     return fin;
+}
+
+/**
+ *
+ * 反转字符串
+ * (增加)
+ */
+std::string reverse_string(const std::string s) {
+    if (s.empty())
+        return s;
+    std::string temp(s.size(), 'a');
+    decltype(temp.size()) i;
+    for (i =  s.size() - 1; i > 0; i --)
+        temp[s.size() - 1 - i] = s[i];
+    temp[s.size() -1 - i] = s[0];
+    return temp;
 }
 
 /**
@@ -123,6 +156,64 @@ std::vector<std::string> split(std::string& input, const std::string& delimiter)
     }
 
     return result;
+}
+
+/**
+ * 
+ * 从文件末尾开始读取数据直到文件头
+ * 每调用一次就读取一行，从第 n 行到第 1 行。
+ * 可能返回空串
+ * (增加)
+ */
+std::string get_one_line(std::ifstream &fin, sort_order order) {
+    std::string line("");
+
+    if (order == ASC) {
+        std::getline(fin, line);
+        //cout << line << endl;
+
+    } else if (order == DESC) {
+        static decltype(fin.tellg()) pos = 1;
+        static std::streampos size = fin.tellg();
+
+        char c;
+        std::string temp("");
+        unsigned char flag = 1;
+        for (; pos <= size; pos += 1) {
+            fin.seekg(-pos, std::ios::end);
+            fin.get(c);
+            //line += c;
+            if (flag) {
+                flag = 0;
+                continue;
+            }
+            if (c != '\n') {
+                line += c;
+                //putchar(c);
+                if (pos == size) {
+                    temp = line;
+                    break;
+                } else {
+                    continue;
+                }
+            } 
+            //else 
+            //    putchar('\n');
+            temp = line;
+            line = "";
+            break;
+              
+            //std::cout << c;
+        }
+
+        line = temp;
+        line = reverse_string(line);
+        //std::cout << "pos: " << -pos << std::endl;
+        //std::cout << "Size: " << size<< std::endl;
+        //std::cout << "Line: " << line << std::endl;
+    }
+
+    return line;
 }
 
 /**
@@ -154,9 +245,15 @@ void strip_spaces(std::string& s) {
 /**
  *
  * 根据传入的参数筛选出符合的条件的条目
+ * param total_page    查询结果的总页数，是一个引用
+ * param condition      查询的条件
+ * param page           页码
+ * param limit          每页最多有几条数据
+ * param order          逆序从文件中取数据，还是顺序取数据
+ * param keyword        关键词
  * （大修改）
  */
-book* generate_book_linked_list(check_condition condition = ALL, unsigned long long page = 1, per_page limit = FIVE, std::string keyword = "") {
+book* generate_book_linked_list(unsigned long long &total_page, check_condition condition = ALL, unsigned long long page = 1, per_page limit = FIVE, sort_order order = ASC, std::string keyword = "") {
 
     book* pHead = nullptr;
 
@@ -185,17 +282,25 @@ book* generate_book_linked_list(check_condition condition = ALL, unsigned long l
     // fnmatch() 函数任意位置匹配
     keyword = "*" + keyword + "*";
 
-    std::ifstream fin = get_file_read_handler("books.txt");
+    std::ifstream fin;
+    if (order == ASC)
+        fin = get_file_read_handler("books.txt");
+    else if(order == DESC)
+        fin = get_file_read_handler("books.txt", 'E');
 
     std::string line;
     book *pCurrent = nullptr, *pPrev = nullptr;
     std::vector<std::string> temp;
-    while (std::getline(fin, line)) {
+    //std::getline(fin, line);
+    line = get_one_line(fin, order);
+    while (!line.empty()) {
         //std::cout << line << std::endl;
         //
         pCurrent = new book();
 
         temp = split(line, "|||");
+        //std::getline(fin, line);
+        line = get_one_line(fin, order);
 
         /*
     enum check_condition {
@@ -294,18 +399,32 @@ book* generate_book_linked_list(check_condition condition = ALL, unsigned long l
     return pHead;
 }
 
-void display_books(book*& pHead) {
+/**
+ * 
+ * 打印链表
+ * 这里的 order 指对查询结果链表进行顺序或逆序的排序
+ * (修改)
+ * */
+void display_books(book*& pHead, sort_order order) {
     book*& pTmp = pHead;
-    book* prev = nullptr;
-    while (pTmp) {
-        prev = pTmp;
-        pTmp = pTmp->next;
-    }
+    if (order == DESC) {
+        book* prev = nullptr;
+        while (pTmp) {
+            prev = pTmp;
+            pTmp = pTmp->next;
+        }
 
-    while (prev) {
-        std::cout << prev->book_id << "|||" << prev->isbn << "|||" << prev->book_name  << "|||" << prev->author << "|||" << prev->book_publisher << "|||" <<  prev->book_category << "|||" << prev->price << "|||" << prev->borrow_count << "|||" << prev->book_amount << "|||" << prev->book_current_amount << "|||" << prev->appointment << "|||" << prev->book_status << "|||" << prev->last_borrow_date << "|||" << prev->last_return_date << std::endl;
-        delete prev;
-        prev = prev->prev;
+        while (prev) {
+            std::cout << prev->book_id << "|||" << prev->isbn << "|||" << prev->book_name  << "|||" << prev->author << "|||" << prev->book_publisher << "|||" <<  prev->book_category << "|||" << prev->price << "|||" << prev->borrow_count << "|||" << prev->book_amount << "|||" << prev->book_current_amount << "|||" << prev->appointment << "|||" << prev->book_status << "|||" << prev->last_borrow_date << "|||" << prev->last_return_date << std::endl;
+            delete prev;
+            prev = prev->prev;
+        }
+    } else if (order == ASC) {
+        while (pTmp != nullptr) {
+            std::cout << pTmp->book_id << "|||" << pTmp->isbn << "|||" << pTmp->book_name  << "|||" << pTmp->author << "|||" << pTmp->book_publisher << "|||" <<  pTmp->book_category << "|||" << pTmp->price << "|||" << pTmp->borrow_count << "|||" << pTmp->book_amount << "|||" << pTmp->book_current_amount << "|||" << pTmp->appointment << "|||" << pTmp->book_status << "|||" << pTmp->last_borrow_date << "|||" << pTmp->last_return_date << std::endl;
+            delete pTmp;
+            pTmp = pTmp->next;
+        }
     }
 }
 
@@ -321,9 +440,11 @@ int main() {
     //std::string s("97871154093");
     std::string keyword("   ");
     //book* pBook = generate_book_linked_list(GLOBAL, 1, FIVE, keyword);
-    book* pBook = generate_book_linked_list(ALL, 1, FIVE, keyword);
+    unsigned long long int total_page = 0;
+    book* pBook = generate_book_linked_list(total_page, ALL, 2, FIVE, DESC, keyword);
     if (pBook)
-        display_books(pBook);
+        //display_books(pBook, ASC);
+        display_books(pBook, DESC);
     else 
         std::cout << "很遗憾！没有找到哦～～" << std::endl;
 
