@@ -24,10 +24,9 @@ using namespace std;
  * 分页时每页显示的最多条目
  *
  * 重命名为 per_page，原名 limit_num
- * 添加数字
+ * (修改)
  */
 enum per_page {
-    ONE = 1, // 1
     FIVE = 5, // 5
     TEN = 10, // 10
     TWENTY = 20 // 20
@@ -40,6 +39,24 @@ enum per_page {
 enum sort_order {
     ASC,
     DESC
+};
+
+/*
+ * 图书检索条件
+ *
+ * 添加 GLOBAL
+ */
+enum check_condition {
+    // 显示所有的数据
+    ALL,
+    // 分别从所有字段中找
+    GLOBAL,
+    // 在 ISBN 字段中查询
+    ISBN,
+    NAME,
+    AUTHOR,
+    PUBLISHER,
+    CATEGORY
 };
 
 // 添加 prev 属性
@@ -61,21 +78,6 @@ struct book
     std::string last_return_date = "0000-00-00";//图书最近一次归还时间，默认为0000-00-00；
     book * next = nullptr;
     book * prev = nullptr;
-};
-
-/*
- * 图书检索条件
- *
- * 添加 GLOBAL
- */
-enum check_condition {
-    ALL,
-    GLOBAL,
-    ISBN,
-    NAME,
-    AUTHOR,
-    PUBLISHER,
-    CATEGORY
 };
 
 /**
@@ -101,7 +103,7 @@ std::ifstream get_file_read_handler(const char* filename, const char mode = 'D')
     switch (mode) {
         case 'E':
             // 从文件未尾到文件头
-            fin.open(filename, std::ios_base::ate);
+            fin.open(filename, std::ios_base::ate | std::ios_base::app);
             break;
         default:
             // 找不到文件就创建文件
@@ -112,6 +114,7 @@ std::ifstream get_file_read_handler(const char* filename, const char mode = 'D')
         std::cout << "文件打开失败！" << std::endl;
         std::exit(1);
     }
+
     return fin;
 }
 
@@ -245,7 +248,8 @@ void strip_spaces(std::string& s) {
 /**
  *
  * 根据传入的参数筛选出符合的条件的条目
- * param total_page    查询结果的总页数，是一个引用
+ * param total_item     用于计算查询结果总页数
+ * param total_page     查询结果的总页数，是一个引用
  * param condition      查询的条件
  * param page           页码
  * param limit          每页最多有几条数据
@@ -253,7 +257,7 @@ void strip_spaces(std::string& s) {
  * param keyword        关键词
  * （大修改）
  */
-book* generate_book_linked_list(unsigned long long &total_page, check_condition condition = ALL, unsigned long long page = 1, per_page limit = FIVE, sort_order order = ASC, std::string keyword = "") {
+book* generate_book_linked_list(unsigned long long &total_item, unsigned long long &total_page, check_condition condition = ALL, unsigned long long page = 1, per_page limit = FIVE, sort_order order = ASC, std::string keyword = "") {
 
     book* pHead = nullptr;
 
@@ -264,29 +268,32 @@ book* generate_book_linked_list(unsigned long long &total_page, check_condition 
             return  pHead;
     }
 
+    std::ifstream fin;
+    fin = get_file_read_handler("books.txt");
+
+    int c = fin.get();
+    if (fin.eof()) {
+        return pHead;
+    }
+    fin.seekg(0);
+    if (order == DESC) {
+        fin = get_file_read_handler("books.txt", 'E');
+    }
+
+
     unsigned long long items_per_page = limit;
     // 从 0 开始
     unsigned long long this_page_first_item_pos;
     unsigned long long this_page_last_item_pos;
     // 从 0 到 this_page_first_item_pos 需要跳过的计数
     unsigned long long skip_count = 0;
+    
 
     this_page_first_item_pos = (page - 1) * items_per_page;
     this_page_last_item_pos = this_page_first_item_pos + items_per_page - 1;
 
-    if (this_page_first_item_pos == 0) {
-        // 防止此时 this_page_last_item_pos 控制的计数少一项
-        this_page_last_item_pos ++;
-    }
-
     // fnmatch() 函数任意位置匹配
     keyword = "*" + keyword + "*";
-
-    std::ifstream fin;
-    if (order == ASC)
-        fin = get_file_read_handler("books.txt");
-    else if(order == DESC)
-        fin = get_file_read_handler("books.txt", 'E');
 
     std::string line;
     book *pCurrent = nullptr, *pPrev = nullptr;
@@ -354,14 +361,18 @@ book* generate_book_linked_list(unsigned long long &total_page, check_condition 
         if (!flag)
             continue;
 
+        total_item ++;
+
         if (skip_count < this_page_first_item_pos) {
             skip_count ++;
             continue;
         }
 
-        // 如果前面不加 1，就会导致计数少 1
-        if (this_page_last_item_pos == this_page_first_item_pos)
-            break;
+        // 如果不加上 1，就会出现每页都少 1 项数据
+        if (this_page_last_item_pos + 1 == this_page_first_item_pos) {
+            continue;
+        }
+        // 9 8 7 6
 
         this_page_last_item_pos --;
 
@@ -395,6 +406,8 @@ book* generate_book_linked_list(unsigned long long &total_page, check_condition 
 
     if (!pHead)
         pCurrent->next = nullptr;
+
+    total_page = total_item / limit + 1;
 
     return pHead;
 }
@@ -438,13 +451,19 @@ int main() {
     //return 0;
 
     //std::string s("97871154093");
-    std::string keyword("   ");
+    std::string keyword(" 9  ");
     //book* pBook = generate_book_linked_list(GLOBAL, 1, FIVE, keyword);
     unsigned long long int total_page = 0;
-    book* pBook = generate_book_linked_list(total_page, ALL, 2, FIVE, DESC, keyword);
-    if (pBook)
-        //display_books(pBook, ASC);
-        display_books(pBook, DESC);
+    unsigned long long int total_item = 0;
+    book* pBook = generate_book_linked_list(total_item, total_page, ALL, 1, FIVE, DESC, keyword);
+    if (pBook) {
+        display_books(pBook, ASC);
+        //display_books(pBook, DESC);
+
+        std::cout << "查询结果总数：" << total_item << std::endl;
+        std::cout << "总页数：" << total_page << std::endl;
+        std::cout << "每页：" << FIVE << " 条数据"<< std::endl;
+    }
     else 
         std::cout << "很遗憾！没有找到哦～～" << std::endl;
 
