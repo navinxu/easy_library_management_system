@@ -271,7 +271,7 @@ book* generate_book_linked_list(unsigned long long &total_item, unsigned long lo
     std::ifstream fin;
     fin = get_file_read_handler("books.txt");
 
-    int c = fin.get();
+    fin.get();
     if (fin.eof()) {
         return pHead;
     }
@@ -408,6 +408,8 @@ book* generate_book_linked_list(unsigned long long &total_item, unsigned long lo
         pCurrent->next = nullptr;
 
     total_page = total_item / limit + 1;
+    if (total_item % limit == 0)
+        total_page --;
 
     return pHead;
 }
@@ -451,11 +453,11 @@ int main() {
     //return 0;
 
     //std::string s("97871154093");
-    std::string keyword(" 9  ");
+    std::string keyword("       架构  ");
     //book* pBook = generate_book_linked_list(GLOBAL, 1, FIVE, keyword);
     unsigned long long int total_page = 0;
     unsigned long long int total_item = 0;
-    book* pBook = generate_book_linked_list(total_item, total_page, ALL, 1, FIVE, DESC, keyword);
+    book* pBook = generate_book_linked_list(total_item, total_page, ALL, 2, FIVE, DESC, keyword);
     if (pBook) {
         display_books(pBook, ASC);
         //display_books(pBook, DESC);
