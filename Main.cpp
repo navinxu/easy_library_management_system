@@ -1463,13 +1463,15 @@ void sort_books(book *&pBookHead, sort_condition sort_by, sort_order order_by) {
  */
 std::string strip_space_begin_end(const std::string input_str) {
 
+    std::string output_str = "";
+
     // 去除头部空格
     std::string::size_type index_begin = 0;
     for (; index_begin < input_str.size() && isspace(input_str[index_begin]); index_begin ++);
 
     // 此处只有两种情况，1.如果全为空格，2.如果字符串中还有其他字符
     if (index_begin == input_str.size())
-        return "";
+        return output_str;
 
     // 去除尾部空格
     decltype(input_str.size()) index_end;
@@ -1477,7 +1479,6 @@ std::string strip_space_begin_end(const std::string input_str) {
 
     // 获取中间的子字符串
     decltype(input_str.size()) index;
-    std::string output_str = "";
     for (index = index_begin; index <= index_end; index ++)
         output_str += input_str[index];
 
