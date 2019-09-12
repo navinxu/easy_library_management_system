@@ -15,12 +15,10 @@
 #include <vector> // vector
 #include <fnmatch.h> // fnmatch()
 #include <cctype> // isspace()
-#include <list> // list
 using namespace std;
 
 /**
  *
- * ADD
  * 分页时每页显示的最多条目
  *
  * 重命名为 per_page，原名 limit_num
@@ -121,7 +119,6 @@ std::ifstream get_file_read_handler(const char* filename, const char mode = 'D')
 /**
  *
  * 反转字符串
- * (增加)
  */
 std::string reverse_string(const std::string s) {
     if (s.empty())
@@ -453,11 +450,11 @@ int main() {
     //return 0;
 
     //std::string s("97871154093");
-    std::string keyword("       架构  ");
+    std::string keyword("       a架构  ");
     //book* pBook = generate_book_linked_list(GLOBAL, 1, FIVE, keyword);
     unsigned long long int total_page = 0;
     unsigned long long int total_item = 0;
-    book* pBook = generate_book_linked_list(total_item, total_page, ALL, 2, FIVE, DESC, keyword);
+    book* pBook = generate_book_linked_list(total_item, total_page, GLOBAL, 2, FIVE, DESC, keyword);
     if (pBook) {
         display_books(pBook, ASC);
         //display_books(pBook, DESC);

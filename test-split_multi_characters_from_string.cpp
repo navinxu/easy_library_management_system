@@ -12,6 +12,9 @@
 #include <vector>
 using namespace std;
 
+/**
+ *
+ * 分割由多个字符相隔的字符串
 vector<string> split(string& input, const string& delimiter) {
     vector<string> result;
 
