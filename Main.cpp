@@ -198,7 +198,7 @@ int main() {
                     case 2:
                         // 增加图书
                         switch (add_book()) {
-                            case -1:
+                            case -1: // 返回主页
                                 switch_admin_home = true;
                                 break;
                             case 0:
@@ -429,7 +429,7 @@ int add_book() {
 
             if (!new_book->isbn.compare("0")) {
                 return 0; // 如果输入 0 ，退出程序
-            } else if (!new_book->isbn.compare("1")) {
+            } else if (!new_book->isbn.compare("-1")) {
                 return -1; // 输入1 ，返回管理首页
             }
 
@@ -1232,7 +1232,7 @@ void search_book(check_condition condition, bool &switch_search_book_home, bool 
     unsigned long long total_item = 0;
     unsigned long long total_page = 0;
     unsigned long long page = 1;
-    per_page limit = FIVE;
+    per_page limit = TWENTY;
     sort_order order = ASC;
 
     std::string select;
