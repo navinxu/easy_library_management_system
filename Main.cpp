@@ -166,7 +166,6 @@ int display_search_book_select();
 int search_book_work(unsigned long long &total_item, unsigned long long &total_page, check_condition condition = ALL, unsigned long long page = 1, per_page limit = FIVE, sort_order order = ASC, std::string keyword = " ");
 void search_book(check_condition condition, bool &switch_search_book_home, bool &search_book);
 void delete_book_by_id(unsigned long long book_id);
-void do_delete_book_by_id(book * &pBookHead, unsigned long long book_id);
 void exchange_data_for_book(book *&p, book *&q);
 short int locale_chinese_string_compare (const std::string& s1, const std::string& s2);
 void sort_books(book *&pBookHead, sort_condition sort_by, sort_order order_by);
@@ -733,8 +732,10 @@ void delete_book_by_id(unsigned long long int book_id) {
     fout = get_file_write_handler("./books.tmp", 'T');
 
     fin.get();
-    if (fin.eof())
-        return;
+    if (fin.eof()) {
+        std::cout << "文件为空，未知错误！" << std::endl;
+        std::exit(0);
+    }
 
     fin.seekg(0);
 
