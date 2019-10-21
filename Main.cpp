@@ -148,7 +148,7 @@ int display_admin_home();
 int display_logon_reader();
 int add_book();
 char ensure_book_info(book *);
-void save_book(book *, bool);
+void save_new_one_book(book *, bool);
 std::ifstream get_file_read_handler(const char *, const char);
 std::ofstream get_file_write_handler(const char *, const char);
 void combine_book_data(book * &);
@@ -157,7 +157,6 @@ char * string_to_char(std::string);
 book* generate_book_linked_list(unsigned long long &total_item, unsigned long long &total_page, check_condition condition = ALL, unsigned long long page = 1, per_page limit = FIVE, sort_order order = ASC, std::string keyword = "");
 void print_book(book *&);
 bool book_exists(std::string);
-void save_all_books(book *&);
 void modify_and_save_book_info(std::string);
 template <class T>
 void convertFromString(T &value, const std::string &s);
@@ -175,6 +174,7 @@ std::string strip_spaces(std::string& s);
 std::string get_one_line(std::ifstream &fin, sort_order order);
 std::vector<std::string> split(std::string& input, const std::string& delimiter);
 std::string reverse_string(const std::string s);
+void sort_res_linked_list(book * &pBookHead, sort_condition condition, sort_order order);
 
 
 int main() {
@@ -560,8 +560,8 @@ int add_book() {
                     std::cout << "=======================" << std::endl;
                     combine_book_data(new_book);
                     //print_book(new_book);
-                    save_book(new_book, true);
-            switch_is_to_save = false;
+                    save_new_one_book(new_book, true);
+                    switch_is_to_save = false;
                     break;
                 case 'N':
                     break;
@@ -600,8 +600,7 @@ char ensure_book_info(book * pBookHead) {
  *
  * 保存图书信息
  */
-
-void save_book(book * pBookHead, bool single_book = true) {
+void save_new_one_book(book * pBookHead, bool single_book = true) {
 
     std::ofstream fout = get_file_write_handler("books.txt", 'A');
 
@@ -906,7 +905,8 @@ book* generate_book_linked_list(unsigned long long &total_item, unsigned long lo
         this_page_last_item_pos --;
 
         //cout << this_page_last_item_pos << endl;
-
+        
+        pCurrent = new book();
         pCurrent->book_id = std::stoull(temp[0]);
         pCurrent->isbn = temp[1];
         pCurrent->book_name = temp[2];
@@ -1129,23 +1129,6 @@ void modify_and_save_book_info(std::string isbn) {
     std::cout << "所有改动更新成功！" << std::endl;
 }
 
-/*
- *
- * 保存所有的图书信息
- *
- */
-void save_all_books(book * &pHead) {
-    // 清空原文件
-    get_file_write_handler("books.txt", 'T').close();
-
-    while (pHead != nullptr) {
-
-        save_book(pHead, false);
-
-        pHead = pHead->next;
-    }
-}
-
 void print_book(book *&pBookHead) {
     book *tmp = nullptr;
     long long count = 1;
@@ -1189,7 +1172,7 @@ int display_search_book_select() {
  * \param keyword 查询关键词
  * \return 0 重新输入关键字 1 没有找到关键词
  */
-int search_book_work(unsigned long long &total_item, unsigned long long &total_page, check_condition condition, unsigned long long page, per_page limit, sort_order order, std::string keyword) {
+int search_book_work(check_condition condition, std::string keyword) {
 
     strip_spaces(keyword);
     if ((!keyword.compare("")) && (condition != ALL)) {
@@ -1197,6 +1180,12 @@ int search_book_work(unsigned long long &total_item, unsigned long long &total_p
         std::cout << "关键词为空，请重新输入。" << std::endl;
         return 0;
     }
+
+    unsigned long long total_item = 0;
+    unsigned long long total_page = 0;
+    unsigned long long page = 1;
+    per_page limit = TWENTY;
+    sort_order order = ASC;
 
     book* pBook = generate_book_linked_list(total_item, total_page, condition, page, limit, order, keyword); 
 
@@ -1230,17 +1219,11 @@ void search_book(check_condition condition, bool &switch_search_book_home, bool 
         return;
     }
 
-    unsigned long long total_item = 0;
-    unsigned long long total_page = 0;
-    unsigned long long page = 1;
-    per_page limit = TWENTY;
-    sort_order order = ASC;
-
     std::string select;
 
     bool book_operation = true;
     
-    switch (search_book_work(total_item, total_page, condition, page, limit, order, keyword)) {
+    switch (search_book_work(condition, keyword)) {
         case 0:
             // 关键词为空
         case 1:
