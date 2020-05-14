@@ -4,7 +4,6 @@ tags
 *.txt
 *.out
 *.swp
-*test
 *.txt
 test.cpp
 *.tmp
